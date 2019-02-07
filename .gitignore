@@ -1,0 +1,4 @@
+clar.egg-info/*
+clar/__pycache__/*
+
+*.pyc
