@@ -1,7 +1,7 @@
 # run: conda env create --file environment.yml
 # I've only checked with conda==4.3.25 so please update
 # to this version if there's an error
-# name: celer-env
+name: CLaR-env
 
 dependencies:
     - ipython
