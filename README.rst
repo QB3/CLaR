@@ -15,4 +15,4 @@ should run smoothly, and you can execute the `example.py` file.
 ArXiv link: https://export.arxiv.org/abs/1902.02509
 
 .. |image0| https://travis-ci.org/QB3/CLaR.svg?branch=master
-   :target: https://travis-ci.org/QB3/CLaR
+   :target: https://travis-ci.org/QB3/CLaR/
