@@ -104,7 +104,7 @@ def solver(
     else:
         raise ValueError("Unknown solver %s" % solver_name)
 
-    results = _sgcl_me_njit(
+    results = solver_(
         observations, X, alpha, alpha_max, sigma_min, B, n_iter, gap_freq,
         use_accel, active_set_freq, update_S_freq, tol=tol,
         solver_name=solver_name, verbose=verbose,
@@ -112,7 +112,7 @@ def solver(
     return results
 
 
-def _sgcl_me_njit(
+def solver_(
         all_epochs, X, alpha, alpha_max, sigma_min, B, n_iter, gap_freq, use_accel,
         active_set_freq=5, update_S_freq=10, tol=10**-4,
         solver_name="CLAR", verbose=True, use_heuristic_stopping_criterion=False):
