@@ -7,13 +7,13 @@ from data.artificial import get_data_me
 from clar.utils import get_sigma_min, get_alpha_max
 
 
-def test_sgcl_me1():
-    tests_sgcl_me(
+def test_clar1():
+    test_clar(
         n_channels=20, n_times=30, n_epochs=50,
         n_sources=50, n_active=3, n_iter=10**4, tol=1e-7)
 
 
-def tests_sgcl_me(
+def test_clar(
         dictionary_type="Gaussian", noise_type="Gaussian_iid", rho_noise=0.3,
         SNR=0.5, n_channels=20, n_times=30, n_sources=10, n_epochs=50,
         n_active=3, gap_freq=50, active_set_freq=1, S_freq=10,
@@ -43,4 +43,4 @@ def tests_sgcl_me(
 
 
 if __name__ == '__main__':
-    test_sgcl_me1()
+    test_clar1()
