@@ -3,7 +3,12 @@ CLaR
 
 |image0|
 
-Fast algorithm to handle linear regression with heteroscedastic noise.
+This package implements the CLaR alorithm, a fast algorithm to handle sparse linear regression with heteroscedastic noise, see:
+Bertrand, Q., Massias, M., Gramfort, A., & Salmon, J. (2019). Concomitant Lasso with Repetitions (CLaR): beyond averaging multiple realizations of heteroscedastic noise. arXiv preprint arXiv:1902.02509.
+
+It also implements a variation of the MRCE algorithm with a L21 penalization on the regression coefficient Beta, and which take in account the repetitions see
+Rothman, A. J., Levina, E., & Zhu, J. (2010). Sparse multivariate regression with covariance estimation. Journal of Computational and Graphical Statistics, 19(4), 947-962.
+
 
 To be able to run the code you first need to run, in this folder:
 ```pip install -e .```
