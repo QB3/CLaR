@@ -13,7 +13,7 @@ def get_path(
         X, measurement, list_pourcentage_alpha, alpha_max,
         sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
-        update_S_freq=10, solver_name="CLAR", use_accel=False,
+        update_S_freq=10, pb_name="CLAR", use_accel=False,
         verbose=True, use_heuristic_stopping_criterion=False):
     dict_masks = {}
     dict_dense_Bs = {}
@@ -24,17 +24,17 @@ def get_path(
         print("%i-th alpha over %i" % (n_alpha, len(list_pourcentage_alpha)))
         # unique params to store results
         alpha = pourcentage_alpha * alpha_max
-        # run solver of solver_name
+        # run solver of pb_name
         B_hat, _, _, _ = solver(
             X, measurement, alpha, alpha_max, sigma_min, B0=B_hat,
             n_iter=n_iter, gap_freq=gap_freq, active_set_freq=active_set_freq,
-            update_S_freq=update_S_freq, solver_name=solver_name, tol=tol,
+            update_S_freq=update_S_freq, pb_name=pb_name, tol=tol,
             use_accel=use_accel,
             use_heuristic_stopping_criterion=use_heuristic_stopping_criterion)
         # save the results
         mask = np.abs(B_hat).sum(axis=1) != 0
         str_pourcentage_alpha = '%0.10f' % pourcentage_alpha
-        if solver_name == "MTLME":
+        if pb_name == "MTLME":
             n_sources = X.shape[1]
             n_epochs, _, n_times = measurement.shape
             B_reshaped = B_hat.reshape((n_sources, n_epochs, n_times))
@@ -51,7 +51,7 @@ def get_path(
 def solver(
         X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
-        S_freq=10, pb_name="CLaR", use_accel=False,
+        S_freq=10, pb_name="CLAR", use_accel=False,
         n_nncvx_iter=10, verbose=True, heur_stop=False, alpha_Sigma_inv=0.0001):
     """
     Parameters
@@ -85,7 +85,7 @@ def solver(
         S is updated every S times.
     pb_name: str
         choose the problem you want to solve between
-        "MTL", "MTLME", "SGCL", "CLaR" and "MRCE"
+        "MTL", "MTLME", "SGCL", "CLAR" and "MRCE"
     use_accel: bool
         States if you want to use accelratio while computing the dual.
     n_nncvx_iter: int
@@ -122,7 +122,7 @@ def solver(
             raise ValueError("Wrong number of dimensions, expected 2, "
                              "got %d " % all_epochs.ndim)
         observations = all_epochs[None, :, :]
-    elif pb_name in ("CLaR","MRCE"):
+    elif pb_name in ("CLAR","MRCE"):
         observations = all_epochs
     elif pb_name == "MTLME":
         if all_epochs.ndim !=3:
@@ -146,7 +146,7 @@ def solver(
 def solver_(
         all_epochs, X, alpha, alpha_max,  sigma_min, B, n_iter, gap_freq, use_accel,
         active_set_freq=5, S_freq=10, tol=10**-4,
-        pb_name="CLaR", verbose=True, heur_stop=False, alpha_Sigma_inv=0.01):
+        pb_name="CLAR", verbose=True, heur_stop=False, alpha_Sigma_inv=0.01):
     gaps = []
     gaps_acc = []
     E = []  # E for energy, ie value of primal objective
@@ -155,7 +155,7 @@ def solver_(
     d_obj_acc = - np.infty
     n_epochs, n_sensors, n_times = all_epochs.shape
 
-    if pb_name == "CLaR" or pb_name == "MRCE":
+    if pb_name == "CLAR" or pb_name == "MRCE":
         # compute Y2, costly quantity to compute once
         Y2 = np.zeros((n_sensors, n_sensors))
         Y = np.zeros((n_sensors, n_times))
@@ -180,7 +180,7 @@ def solver_(
     B_first = np.zeros(B.shape)
     if pb_name != "MRCE":
         S_trace_first, S_inv_first = update_S(Y, X, B_first, Y, Y2, sigma_min, pb_name)
-    if pb_name == "CLaR":
+    if pb_name == "CLAR":
         primal_first, _ = get_duality_gap_me(
             X, all_epochs, B_first, S_trace_first, S_inv_first,
             sigma_min, alpha)
@@ -205,7 +205,7 @@ def solver_(
         #####################################################
         # update S
         if t % S_freq == 0:
-            if pb_name == "CLaR":
+            if pb_name == "CLAR":
                 XB = X @ B
                 YXB = Y @ XB.T
                 ZZT = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
@@ -242,7 +242,7 @@ def solver_(
             active_set_freq)
         # compute duality gap
         if t % gap_freq == 0:
-            if pb_name == "CLaR":
+            if pb_name == "CLAR":
                 p_obj, d_obj = get_duality_gap_me(
                     X, all_epochs, B, S_trace, S_inv,
                     sigma_min, alpha)
@@ -315,23 +315,23 @@ def solver_(
     return results
 
 
-def update_S(Y, X, B, R, Y2, sigma_min, solver_name):
+def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
     n_times = B.shape[1]
     n_sensors = Y.shape[-1]
-    if solver_name == "CLAR":
+    if pb_name == "CLAR":
         XB = X @ B
         YXB = Y @ XB.T
         ZZT = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
         S_trace, S_inv = condition_better(ZZT, sigma_min)
         S_inv_R = np.asfortranarray(S_inv @ R)
         S_inv_X = S_inv @ X
-    elif solver_name == "SGCL":
+    elif pb_name == "SGCL":
         Z = Y - X @ B
         ZZT = Z @ Z.T / n_times
         S_trace, S_inv = condition_better(ZZT, sigma_min)
         S_inv_R = np.asfortranarray(S_inv @ R)
         S_inv_X = S_inv @ X
-    elif solver_name == "MTL" or solver_name == "MTLME":
+    elif pb_name == "MTL" or pb_name == "MTLME":
         # this else case is for MTL
         # dummy variables for njit to work:
         S_trace = n_sensors
@@ -344,12 +344,12 @@ def update_S(Y, X, B, R, Y2, sigma_min, solver_name):
 @njit
 def update_B(
         X, Y, B, R,  S_inv_R, S_inv_X,
-        alpha, solver_name,
+        alpha, pb_name,
         active_set_passes=5):
     n_sensors, n_times = Y.shape
     n_sources = X.shape[1]
 
-    is_not_MTL = (solver_name != "MTL") and (solver_name != "MTLME")
+    is_not_MTL = (pb_name != "MTL") and (pb_name != "MTLME")
 
     active_set = np.ones(n_sources)
 

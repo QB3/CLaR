@@ -132,21 +132,21 @@ def get_alpha_max_mtl(X, Y):
     return alpha_max
 
 
-def get_alpha_max(X, Y, sigma_min, solver_name):
-    if solver_name == "SGCL":
+def get_alpha_max(X, Y, sigma_min, pb_name):
+    if pb_name == "SGCL":
         assert Y.ndim == 2
         return get_alpha_max_sgcl(X, Y, sigma_min)
-    elif solver_name == "CLAR":
+    elif pb_name == "CLAR":
         return get_alpha_max_me(X, Y, sigma_min)
-    elif solver_name == "MTL":
+    elif pb_name == "MTL":
         return get_alpha_max_mtl(X, Y)
-    elif solver_name == "MTLME":
+    elif pb_name == "MTLME":
         observations = Y.transpose((1, 0, 2))
         observations = observations.reshape(observations.shape[0], -1)
         return get_alpha_max_mtl(X, observations)
     else:
         raise NotImplementedError("No solver '{}' in this module"
-                                  .format(solver_name))
+                                  .format(pb_name))
 
 
 def get_alpha_max_sgcl(X, Y, sigma_min):

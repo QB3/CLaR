@@ -2,6 +2,7 @@ import numpy as np
 
 from numba import njit
 from numpy.linalg import norm
+from numpy.linalg import slogdet
 
 from clar.utils import l_2_inf
 from clar.utils import l_2_1

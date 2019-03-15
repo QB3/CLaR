@@ -43,7 +43,7 @@ print("sigma_min = %.2e" % sigma_min)
 B_clar, S_inv, E, gaps_me = solver(
     X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
     n_iter=n_iter, gap_freq=50,
-    update_S_freq=update_S_freq, tol=tol, solver_name="CLAR")
+    S_freq=update_S_freq, tol=tol, pb_name="CLAR")
 gap_me = gaps_me[-1]
 assert gap_me < tol
 
