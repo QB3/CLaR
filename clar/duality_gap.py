@@ -7,6 +7,23 @@ from clar.utils import l_2_inf
 from clar.utils import l_2_1
 
 
+def get_p_obj_MRCE(X, Y, Y2, Sigma, Sigma_inv, alpha, alpha_Sigma_inv, B, sigma_min):
+    n, q = Y.shape
+    XB = X @ B
+    XBYT = XB @ Y.T
+    emp_cov = (Y2 + XB @ XB.T - XBYT - XBYT.T)
+    emp_cov /= q
+    p_obj = Sigma_inv @ emp_cov
+    p_obj = np.trace(p_obj)
+    p_obj /= n
+    p_obj += alpha_Sigma_inv * np.abs(Sigma_inv).sum()
+    p_obj += alpha * l_2_1(B)
+    logdet_Sigma = slogdet(Sigma)[1]
+    # logdet_Sigma, _ = update_Sigma_glasso(Sigma, sigma_min)
+    p_obj += logdet_Sigma # to improve with a log det
+    return p_obj
+
+
 @njit
 def get_p_obj_mtl(R, B, alpha):
     n_sensors, n_times = R.shape
