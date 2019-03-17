@@ -18,6 +18,7 @@ install:
   - python setup.py build_ext --inplace
   - pip install -e .
 script:
+  - source activate CLaR-env
   - pytest
   - flake8 --count clar
 after_success:
