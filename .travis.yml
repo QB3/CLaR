@@ -18,8 +18,8 @@ install:
   - python setup.py build_ext --inplace
   - pip install -e .
 script:
-  - source activate CLaR-env
-  - pytest
+  # - source activate CLaR-env
+  - python3.6 -m pytest
   # - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
   - flake8 --count celer
 after_success:
