@@ -10,7 +10,7 @@ from clar.utils import (clp_sqrt, BST,
     condition_better_glasso)
 from .duality_gap import (
     get_duality_gap, get_duality_gap_me, get_duality_gap_mtl,
-    get_p_obj_MRCE)
+    get_p_obj_mrce)
 
 
 def get_path(
@@ -89,7 +89,7 @@ def solver(
         S is updated every S times.
     pb_name: str
         choose the problem you want to solve between
-        "MTL", "MTLME", "SGCL", "CLAR" and "MRCE"
+        "MTL", "MTLME", "SGCL", "CLAR" and "mrce"
     use_accel: bool
         States if you want to use accelratio while computing the dual.
     n_nncvx_iter: int
@@ -126,7 +126,7 @@ def solver(
             raise ValueError("Wrong number of dimensions, expected 2, "
                              "got %d " % all_epochs.ndim)
         observations = all_epochs[None, :, :]
-    elif pb_name in ("CLAR","MRCE"):
+    elif pb_name in ("CLAR","mrce"):
         observations = all_epochs
     elif pb_name == "MTLME":
         if all_epochs.ndim !=3:
@@ -159,7 +159,7 @@ def solver_(
     d_obj_acc = - np.infty
     n_epochs, n_sensors, n_times = all_epochs.shape
 
-    if pb_name == "CLAR" or pb_name == "MRCE":
+    if pb_name == "CLAR" or pb_name == "mrce":
         # compute Y2, costly quantity to compute once
         Y2 = np.zeros((n_sensors, n_sensors))
         Y = np.zeros((n_sensors, n_times))
@@ -182,7 +182,7 @@ def solver_(
     R = np.asfortranarray(Y - X @ B, dtype='float64')
     # compute the value of the first primal
     B_first = np.zeros(B.shape)
-    if pb_name != "MRCE":
+    if pb_name != "mrce":
         S_trace_first, S_inv_first = update_S(Y, X, B_first, Y, Y2, sigma_min, pb_name)
     if pb_name == "CLAR":
         primal_first, _ = get_duality_gap_me(
@@ -196,10 +196,10 @@ def solver_(
     elif pb_name == "MTL" or pb_name == "MTLME":
         primal_first, _ = get_duality_gap_mtl(
             X, Y, B_first, alpha)
-    elif pb_name == "MRCE":
+    elif pb_name == "mrce":
         Sigma = Y2 / n_times
         Sigma_inv = linalg.pinvh(Sigma)
-        primal_first = get_p_obj_MRCE(
+        primal_first = get_p_obj_mrce(
             X, Y, Y2, Sigma, Sigma_inv, alpha, alpha_Sigma_inv, B_first, sigma_min)
     E.append(primal_first)
     print("------------------------")
@@ -216,11 +216,11 @@ def solver_(
                 S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
                 S_inv_R = np.asfortranarray(S_inv @ R)
                 S_inv_X = S_inv @ X
-            elif pb_name == "MRCE":
+            elif pb_name == "mrce":
                 XB = X @ B
                 YXB = Y @ XB.T
                 emp_cov = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
-                Sigma, Sigma_inv = update_Sigma_glasso(
+                Sigma, Sigma_inv = update_sigma_glasso(
                     emp_cov, alpha_Sigma_inv)
                 _, Sigma_inv = condition_better_glasso(Sigma_inv, sigma_min)
                 S_inv_R = Sigma_inv @ R  # be careful this is not real S_inv_R
@@ -292,8 +292,8 @@ def solver_(
             elif pb_name == "MTL" or pb_name == "MTLME":
                 p_obj, d_obj = get_duality_gap_mtl(
                     X, Y, B, alpha)
-            elif pb_name == "MRCE":
-                p_obj = get_p_obj_MRCE(
+            elif pb_name == "mrce":
+                p_obj = get_p_obj_mrce(
                     X, Y, Y2, Sigma, Sigma_inv, alpha, alpha_Sigma_inv, B, sigma_min)
             gap = p_obj - d_obj
             E.append(p_obj)
@@ -310,7 +310,7 @@ def solver_(
             (use_accel and (p_obj - d_obj_acc < tol * E[0])) \
             or heuristic_stopping_criterion:
             break
-    if pb_name != "MRCE":
+    if pb_name != "mrce":
         results = (B, S_inv, np.asarray(E), np.asarray(gaps))
     else:
         results = (B, (Sigma, Sigma_inv), np.asarray(E), np.asarray(gaps))
@@ -387,7 +387,7 @@ def update_B(
 
 
 
-def update_Sigma_glasso(
+def update_sigma_glasso(
     emp_cov, alpha_Sigma_inv, cov_init=None, mode='cd', tol=1e-4,
     enet_tol=1e-4, sigmamin=1e-4, max_iter=1e4, verbose=False,
     return_costs=False, eps=np.finfo(np.float64).eps,

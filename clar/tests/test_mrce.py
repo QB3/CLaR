@@ -1,12 +1,12 @@
 import numpy as np
-from clar.solvers import solver, update_Sigma_glasso
+from clar.solvers import solver, update_sigma_glasso
 from clar.utils import (
     get_alpha_max, get_sigma_min)
 from clar.data.artificial import get_data_me
 # import matplotlib.pyplot as plt
 
 
-def test_update_Sigma_glasso():
+def test_update_sigma_glasso():
     rho_noise = 0.8
     SNR = 1
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
@@ -30,7 +30,7 @@ def test_update_Sigma_glasso():
 
     alpha_prec = 0.001
 
-    covariance, precision = update_Sigma_glasso(
+    covariance, precision = update_sigma_glasso(
         emp_cov, alpha_prec, cov_init=None, mode='cd', tol=1e-4,
         enet_tol=1e-4, max_iter=100, verbose=False,
         return_costs=False, eps=np.finfo(np.float64).eps,
@@ -47,11 +47,11 @@ def test_update_Sigma_glasso():
     # import ipdb; ipdb.set_trace()
 
 
-def test_MRCE():
+def test_mrce():
     rho_noise = 0.6
     SNR = 1
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
-    pb_name = "MRCE"
+    pb_name = "mrce"
     tol = 1e-4
 
     X, all_epochs, B_star, (_, S_star) = get_data_me(
@@ -69,7 +69,7 @@ def test_MRCE():
     alpha = alpha_max * 0.9
 
 
-    B_MRCE, (Sigma, Sigma_inv), E, gaps = solver(
+    B_mrce, (Sigma, Sigma_inv), E, gaps = solver(
         X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
         tol=tol, pb_name=pb_name, n_iter=1000, alpha_Sigma_inv=alpha_Sigma_inv)
     gap = gaps[-1]
@@ -84,5 +84,5 @@ def test_MRCE():
     # import ipdb; ipdb.set_trace()
 
 if __name__ == '__main__':
-    # test_update_Sigma_glasso()
-    test_MRCE()
+    # test_update_sigma_glasso()
+    test_mrce()

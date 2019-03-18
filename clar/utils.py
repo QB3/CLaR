@@ -220,7 +220,7 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
             cov_Yl, sigma_min)
         alpha_max = l_2_inf(X.T @ S_max_inv @ Y)
         alpha_max /= (n_channels * n_times)
-    elif pb_name == "MRCE":
+    elif pb_name == "mrce":
         assert observation.ndim == 3
         assert alpha_Sigma_inv != None
         emp_cov = get_emp_cov(observation)
@@ -232,7 +232,7 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         emp_cov = observation @ observation.T / n_times
         Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
-    elif pb_name == "MRCE":
+    elif pb_name == "mrce":
         assert observation.ndim == 2
         assert alpha_Sigma_inv != None
         emp_cov = observation @ observation.T / n_times
