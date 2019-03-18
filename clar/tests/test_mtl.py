@@ -2,7 +2,7 @@ import numpy as np
 from clar.solvers import solver
 from clar.utils import (
     get_alpha_max, get_sigma_min)
-from data.artificial import get_data_me
+from clar.data.artificial import get_data_me
 
 
 def test_mtl():

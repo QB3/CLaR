@@ -2,8 +2,12 @@ import numpy as np
 
 from numba import njit
 from numpy.linalg import norm
+from scipy import linalg
 
-from .utils import condition_better, BST
+from sklearn.linear_model import cd_fast
+from sklearn.utils import check_random_state
+from clar.utils import (clp_sqrt, BST,
+    condition_better_glasso)
 from .duality_gap import (
     get_duality_gap, get_duality_gap_me, get_duality_gap_mtl,
     get_p_obj_MRCE)
@@ -209,7 +213,7 @@ def solver_(
                 XB = X @ B
                 YXB = Y @ XB.T
                 ZZT = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
-                S_trace, S_inv = condition_better(ZZT, sigma_min)
+                S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
                 S_inv_R = np.asfortranarray(S_inv @ R)
                 S_inv_X = S_inv @ X
             elif pb_name == "MRCE":
@@ -224,7 +228,7 @@ def solver_(
             elif pb_name == "SGCL":
                 Z = Y - X @ B
                 ZZT = Z @ Z.T / n_times
-                S_trace, S_inv = condition_better(ZZT, sigma_min)
+                S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
                 S_inv_R = np.asfortranarray(S_inv @ R)
                 S_inv_X = S_inv @ X
             elif pb_name == "MTL" or pb_name == "MTLME":
@@ -276,7 +280,7 @@ def solver_(
                             print("##### linalg failed")
                             R_acc = R
 
-                    S_trace_acc, S_inv_acc = condition_better(
+                    S_trace_acc, S_inv_acc = clp_sqrt(
                         R_acc @ R_acc.T / n_times, sigma_min)
                     _, d_obj_acc = get_duality_gap(
                         R, X, Y, B, S_trace_acc, S_inv_acc @ R_acc,
@@ -322,13 +326,13 @@ def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
         XB = X @ B
         YXB = Y @ XB.T
         ZZT = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
-        S_trace, S_inv = condition_better(ZZT, sigma_min)
+        S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
         S_inv_R = np.asfortranarray(S_inv @ R)
         S_inv_X = S_inv @ X
     elif pb_name == "SGCL":
         Z = Y - X @ B
         ZZT = Z @ Z.T / n_times
-        S_trace, S_inv = condition_better(ZZT, sigma_min)
+        S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
         S_inv_R = np.asfortranarray(S_inv @ R)
         S_inv_X = S_inv @ X
     elif pb_name == "MTL" or pb_name == "MTLME":
@@ -382,32 +386,65 @@ def update_B(
                     S_inv_R -= S_inv_X[:, j:j+1] @ B[j:j+1, :]
 
 
-@njit
-def update_Sigma_glasso(ZZT, sigma_min):
-    """Update ZZT by conditionning it better.
 
-    Parameters:
-    ----------
-    ZZT: np.array, shape (n_channels, n_channels)
-        real, positiv definite symmetric matrix
-
-    Output:
-    -------
-    (float,  np.array, shape (n_channels, n_channels))
-        (trace of S updated, inverse of S updated)
-     """
-    eigvals, eigvecs = np.linalg.eigh(ZZT)
-
-    n_eigvals_clipped = (eigvals < sigma_min ).sum()
-    bool_reach_sigma_min = n_eigvals_clipped > 0
-    if bool_reach_sigma_min:
-        print("---------------------------------------")
-        print("warning, be carefull, you reached sigmamin")
-        print(n_eigvals_clipped, " eigenvalues clipped")
-        print("---------------------------------------")
+def update_Sigma_glasso(
+    emp_cov, alpha_Sigma_inv, cov_init=None, mode='cd', tol=1e-4,
+    enet_tol=1e-4, sigmamin=1e-4, max_iter=1e4, verbose=False,
+    return_costs=False, eps=np.finfo(np.float64).eps,
+    return_n_iter=False):
+    _, n_features = emp_cov.shape
+    if cov_init is None:
+        covariance_ = emp_cov.copy()
+        # covariance_ = clp_sqrt(covariance_, sigmamin ** 2)
     else:
-        print("You did not reach sigmamin")
-    eigvals = np.maximum(eigvals, sigma_min)
-    eigvals = np.expand_dims(eigvals, axis=1)
-    return np.log(eigvals).sum(), \
-        eigvecs @ (eigvals * eigvecs.T)
+        covariance_ = cov_init.copy()
+    # As a trivial regularization (Tikhonov like), we scale down the
+    # off-diagonal coefficients of our starting point: This is needed, as
+    # in the cross-validation the cov_init can easily be
+    # ill-conditioned, and the CV loop blows. Beside, this takes
+    # conservative stand-point on the initial conditions, and it tends to
+    # make the convergence go faster.
+    covariance_ *= 0.95
+    diagonal = emp_cov.flat[::n_features + 1]
+    covariance_.flat[::n_features + 1] = diagonal
+    precision_ = linalg.pinvh(covariance_)
+
+    indices = np.arange(n_features)
+    errors = dict(over='raise', invalid='ignore')
+    sub_covariance = np.copy(covariance_[1:, 1:], order='C')
+
+    for idx in range(n_features):
+        # To keep the contiguous matrix `sub_covariance` equal to
+        # covariance_[indices != idx].T[indices != idx]
+        # we only need to update 1 column and 1 line when idx changes
+        if idx > 0:
+            di = idx - 1
+            sub_covariance[di] = covariance_[di][indices != idx]
+            sub_covariance[:, di] = covariance_[:, di][indices != idx]
+        else:
+            sub_covariance[:] = covariance_[1:, 1:]
+        row = emp_cov[idx, indices != idx]
+        with np.errstate(**errors):
+            # Use coordinate descent
+            coefs = -(precision_[indices != idx, idx]
+                        / (precision_[idx, idx] + 1000 * eps))
+            coefs, _, _, _ = cd_fast.enet_coordinate_descent_gram(
+                coefs, alpha_Sigma_inv, 0, sub_covariance,
+                row, row, max_iter, enet_tol,
+                check_random_state(None), False)
+        # Update the precision matrix
+        precision_[idx, idx] = (
+            1. / (covariance_[idx, idx]
+                    - np.dot(covariance_[indices != idx, idx], coefs)))
+        precision_[indices != idx, idx] = (- precision_[idx, idx]
+                                            * coefs)
+        precision_[idx, indices != idx] = (- precision_[idx, idx]
+                                            * coefs)
+        coefs = np.dot(sub_covariance, coefs)
+        covariance_[idx, indices != idx] = coefs
+        covariance_[indices != idx, idx] = coefs
+    if not np.isfinite(precision_.sum()):
+        raise FloatingPointError('The system is too ill-conditioned '
+                                    'for this solver')
+    return covariance_, precision_
+

@@ -7,7 +7,7 @@ from numpy.linalg import norm
 
 from clar.solvers import solver
 from clar.utils import get_alpha_max_me, get_sigma_min, get_alpha_max
-from clar.generate_data import get_data_me
+from clar.data.artificial import get_data_me
 from clar.utils import get_sigma_min, get_alpha_max
 
 
