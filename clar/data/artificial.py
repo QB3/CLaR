@@ -62,12 +62,12 @@ def get_data_me(
 
     X = get_dictionary(
         dictionary_type, n_channels=n_channels,
-        n_sources=n_sources, rho=rho, meg=meg, eeg=eeg, seed=seed )
+        n_sources=n_sources, rho=rho, meg=meg, eeg=eeg, seed=seed)
     S_star = get_S_star(
         noise_type=noise_type, n_channels=n_channels,
         rho_noise=rho_noise, meg=meg, eeg=eeg, seed=seed)
 
-    rng=check_random_state(seed)
+    rng = check_random_state(seed)
     # creates the signal XB
     B_star = np.zeros([n_sources, n_times])
     supp = rng.choice(n_sources, n_active, replace=False)
@@ -81,44 +81,44 @@ def get_data_me(
 
 
 def get_S_star(
-    noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0, meg=True, eeg=True):
-    """Simulate co-standard devation matrix.
+        noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0, meg=True, eeg=True):
+        """Simulate co-standard devation matrix.
 
-    Parameters:
-    ----------
-    noise_type: string
-         "Gaussian_iid", or "Gaussian_multivariate"
-    n_channels: int
-        number of channels
-    rho_noise: float
-        coefficient of correlation for the Toeplitz covariance of the noise
-    seed: int
-    meg: bool or string
-        True, "mag" or "eeg".
-        If True, keeps magnetometers and gradiometers in cov.
-        If "grad", keeps only gradiometers in cov.
-        If "mag", keeps only the magnetometers in cov.
-    eeg: bool
-        If True keep electro-ancephalogramme in cov.
-        If False remove electro-ancephalogramme in cov.
+        Parameters:
+        ----------
+        noise_type: string
+            "Gaussian_iid", or "Gaussian_multivariate"
+        n_channels: int
+            number of channels
+        rho_noise: float
+            coefficient of correlation for the Toeplitz covariance of the noise
+        seed: int
+        meg: bool or string
+            True, "mag" or "eeg".
+            If True, keeps magnetometers and gradiometers in cov.
+            If "grad", keeps only gradiometers in cov.
+            If "mag", keeps only the magnetometers in cov.
+        eeg: bool
+            If True keep electro-ancephalogramme in cov.
+            If False remove electro-ancephalogramme in cov.
 
-    Returns
-    -------
-    S_star: np.array, shape (n_sensors, n_sensors)
-        co-satndard deviation matrix
-    """
-    if noise_type == "Gaussian_iid":
-        S_star = np.eye(n_channels)
-    elif noise_type == "Gaussian_multivariate":
-        vect = rho_noise ** np.arange(n_channels)
-        S_star = toeplitz(vect, vect)
-    else:
-        raise ValueError("Unknown noise type %s" % noise_type)
-    return S_star
+        Returns
+        -------
+        S_star: np.array, shape (n_sensors, n_sensors)
+            co-satndard deviation matrix
+        """
+        if noise_type == "Gaussian_iid":
+            S_star = np.eye(n_channels)
+        elif noise_type == "Gaussian_multivariate":
+            vect = rho_noise ** np.arange(n_channels)
+            S_star = toeplitz(vect, vect)
+        else:
+            raise ValueError("Unknown noise type %s" % noise_type)
+        return S_star
 
 
 def get_data_from_X_S_and_B_star(X, B_star, S_star, n_epochs=50, n_active=3, SNR=0.5, seed=0):
-    rng=check_random_state(seed)
+    rng = check_random_state(seed)
     XB = X @ B_star
     n_channels, n_sources = X.shape
     _, n_times = B_star.shape
@@ -181,7 +181,7 @@ def get_toeplitz_dictionary(
     X : array, shape (n_channels, n_labels)
         The dictionary.
     """
-    rng=check_random_state(seed)
+    rng = check_random_state(seed)
     vect = rho ** np.arange(n_sources)
     covar = toeplitz(vect, vect)
     X = rng.multivariate_normal(np.zeros(n_sources), covar, n_channels)

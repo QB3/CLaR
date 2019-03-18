@@ -6,7 +6,8 @@ from scipy import linalg
 
 from sklearn.linear_model import cd_fast
 from sklearn.utils import check_random_state
-from clar.utils import (clp_sqrt, BST,
+from clar.utils import (
+    clp_sqrt, BST,
     condition_better_glasso)
 from .duality_gap import (
     get_duality_gap, get_duality_gap_me, get_duality_gap_mtl,

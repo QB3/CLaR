@@ -7,6 +7,7 @@ from clar.solvers import solver
 from clar.utils import get_alpha_max, get_sigma_min
 from clar.data.artificial import get_data_me
 
+
 def test_sgcl1():
     tests_sgcl(
         n_channels=30, n_times=30,
