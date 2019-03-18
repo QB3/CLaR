@@ -15,6 +15,7 @@ install:
   - conda env create --file environment.yml python=${PYTHON_VERSION}
   - source activate CLaR-env
   - conda install --yes --quiet pytest pytest-cov coverage
+  - pip install pytest-env
   - pip install flake8 check-manifest
   - pip install codecov
   - python setup.py build_ext --inplace
@@ -22,7 +23,7 @@ install:
 script:
   # - source activate CLaR-env
   # - python3.6 -m pytest
-  - pytest
+  - pytest-env
   # - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
   - flake8 --count celer
 after_success:
