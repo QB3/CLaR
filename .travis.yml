@@ -2,9 +2,6 @@ dist: xenial
 language: python
 python: 3.6
 
-env:
-  - PYTHON_VERSION=3.6
-
 before_install:
   - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
@@ -12,7 +9,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
 install:
-  - conda env create --file environment.yml python=${PYTHON_VERSION}
+  - conda env create --file environment.yml python=3.6
   - source activate CLaR-env
   - conda install --yes --quiet pytest pytest-cov coverage
   - pip install pytest-env
@@ -23,7 +20,7 @@ install:
 script:
   # - source activate CLaR-env
   # - python3.6 -m pytest
-  - pytest-env
+  - pytest
   # - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
   - flake8 --count celer
 after_success:
