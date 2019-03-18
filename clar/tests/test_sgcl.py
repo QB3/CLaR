@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
 
 from clar.solvers import solver

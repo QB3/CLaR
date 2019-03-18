@@ -1,9 +1,9 @@
 import numpy as np
-from sgcl.solvers import solver, update_Sigma_glasso
-from sgcl.utils import (
+from clar.solvers import solver, update_Sigma_glasso
+from clar.utils import (
     get_alpha_max, get_sigma_min)
 from data.artificial import get_data_me
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 def test_update_Sigma_glasso():
