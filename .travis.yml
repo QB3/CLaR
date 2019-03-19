@@ -10,7 +10,7 @@ before_install:
   - conda update --yes --quiet conda
 install:
   - conda env create --file environment.yml python=3.6
-  - source activate CLaR-env
+  - source activate clar-env
   - conda install --yes --quiet pytest pytest-cov coverage
   - pip install pytest-env
   - pip install flake8 check-manifest
