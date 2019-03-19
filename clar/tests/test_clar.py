@@ -1,7 +1,5 @@
 import numpy as np
 
-from numpy.linalg import norm
-
 from clar.solvers import solver
 from clar.data.artificial import get_data_me
 from clar.utils import get_sigma_min, get_alpha_max

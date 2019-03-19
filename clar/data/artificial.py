@@ -82,39 +82,39 @@ def get_data_me(
 def get_S_star(
         noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0,
         meg=True, eeg=True):
-        """Simulate co-standard devation matrix.
+    """Simulate co-standard devation matrix.
 
-        Parameters:
-        ----------
-        noise_type: string
-            "Gaussian_iid", or "Gaussian_multivariate"
-        n_channels: int
-            number of channels
-        rho_noise: float
-            coefficient of correlation for the Toeplitz covariance of the noise
-        seed: int
-        meg: bool or string
-            True, "mag" or "eeg".
-            If True, keeps magnetometers and gradiometers in cov.
-            If "grad", keeps only gradiometers in cov.
-            If "mag", keeps only the magnetometers in cov.
-        eeg: bool
-            If True keep electro-ancephalogramme in cov.
-            If False remove electro-ancephalogramme in cov.
+    Parameters:
+    ----------
+    noise_type: string
+        "Gaussian_iid", or "Gaussian_multivariate"
+    n_channels: int
+        number of channels
+    rho_noise: float
+        coefficient of correlation for the Toeplitz covariance of the noise
+    seed: int
+    meg: bool or string
+        True, "mag" or "eeg".
+        If True, keeps magnetometers and gradiometers in cov.
+        If "grad", keeps only gradiometers in cov.
+        If "mag", keeps only the magnetometers in cov.
+    eeg: bool
+        If True keep electro-ancephalogramme in cov.
+        If False remove electro-ancephalogramme in cov.
 
-        Returns
-        -------
-        S_star: np.array, shape (n_sensors, n_sensors)
-            co-satndard deviation matrix
-        """
-        if noise_type == "Gaussian_iid":
-            S_star = np.eye(n_channels)
-        elif noise_type == "Gaussian_multivariate":
-            vect = rho_noise ** np.arange(n_channels)
-            S_star = toeplitz(vect, vect)
-        else:
-            raise ValueError("Unknown noise type %s" % noise_type)
-        return S_star
+    Returns
+    -------
+    S_star: np.array, shape (n_sensors, n_sensors)
+        co-satndard deviation matrix
+    """
+    if noise_type == "Gaussian_iid":
+        S_star = np.eye(n_channels)
+    elif noise_type == "Gaussian_multivariate":
+        vect = rho_noise ** np.arange(n_channels)
+        S_star = toeplitz(vect, vect)
+    else:
+        raise ValueError("Unknown noise type %s" % noise_type)
+    return S_star
 
 
 def get_data_from_X_S_and_B_star(
@@ -166,8 +166,8 @@ def get_toeplitz_dictionary(
     """This function returns a toeplitz dictionnary phi.
 
     Maths formula:
-    S = toepltiz(\rho ** [|0, n_sources-1|], \rho ** [|0, n_sources-1|])
-    X[:, i] \sim \mathcal{N}(0, S).
+    S = toepltiz(rho ** [|0, n_sources-1|], rho ** [|0, n_sources-1|])
+    X[:, i] sim mathcal(N)(0, S).
 
     Parameters
     ----------

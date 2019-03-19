@@ -66,6 +66,7 @@ def test_mtl_me():
     gap = gaps[-1]
     np.testing.assert_array_less(gap, tol)
 
+
 if __name__ == '__main__':
     test_mtl()
     test_mtl_me()

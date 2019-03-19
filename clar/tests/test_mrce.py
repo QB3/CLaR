@@ -9,13 +9,12 @@ def test_update_sigma_glasso():
     rho_noise = 0.8
     SNR = 1
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
-    tol = 1e-7
 
     X, all_epochs, B_star, (_, S_star) = get_data_me(
         dictionary_type="Gaussian", noise_type="Gaussian_multivariate",
         n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
         n_sources=n_sources, n_active=3, rho_noise=rho_noise,
-        SNR=SNR, tol=tol)
+        SNR=SNR)
 
     emp_cov = np.zeros((n_channels, n_channels))
     for i in range(n_epochs):
