@@ -81,7 +81,8 @@ def get_data_me(
 
 
 def get_S_star(
-        noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0, meg=True, eeg=True):
+        noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0,
+        meg=True, eeg=True):
         """Simulate co-standard devation matrix.
 
         Parameters:

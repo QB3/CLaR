@@ -95,9 +95,11 @@ def solver(
         States if you want to use accelratio while computing the dual.
     n_nncvx_iter: int
         An approach to solve such non-convex problems is to solve a succesion
-        of convex problem. n_nncvx_iter is number of iteration in the outter loop.
+        of convex problem. n_nncvx_iter is number of iteration in the outter
+        loop.
     heur_stop: bool
-        States if you want to use an heuristic stoppping criterion ot stop the algo.
+        States if you want to use an heuristic stoppping criterion ot stop
+        the algo.
         Here the heuristic stopping criterion is
         primal[i] - primal[i+1] < primal[0] * tol / 10.
     """
@@ -126,20 +128,21 @@ def solver(
             raise ValueError("Wrong number of dimensions, expected 2, "
                              "got %d " % all_epochs.ndim)
         observations = all_epochs[None, :, :]
-    elif pb_name in ("CLAR","mrce"):
+    elif pb_name in ("CLAR", "mrce"):
         observations = all_epochs
     elif pb_name == "MTLME":
-        if all_epochs.ndim !=3:
-            raise ValueError("Wrong number of dimensions, expected 2, "
+        if all_epochs.ndim != 3:
+            raise ValueError(
+                "Wrong number of dimensions, expected 2, "
                 "got %d " % all_epochs.ndim)
-        observations = all_epochs.transpose((1,0,2))
+        observations = all_epochs.transpose((1, 0, 2))
         observations = observations.reshape(observations.shape[0], -1)
         observations = observations.reshape((1, *observations.shape))
         n_epochs, n_channels, n_times = all_epochs.shape
     else:
         raise ValueError("Unknown solver %s" % pb_name)
 
-    results =  solver_(
+    results = solver_(
         observations, X, alpha, alpha_max, sigma_min, B, n_iter, gap_freq,
         use_accel, active_set_freq, S_freq, tol=tol,
         pb_name=pb_name, verbose=verbose,
@@ -183,7 +186,8 @@ def solver_(
     # compute the value of the first primal
     B_first = np.zeros(B.shape)
     if pb_name != "mrce":
-        S_trace_first, S_inv_first = update_S(Y, X, B_first, Y, Y2, sigma_min, pb_name)
+        S_trace_first, S_inv_first = update_S(
+            Y, X, B_first, Y, Y2, sigma_min, pb_name)
     if pb_name == "CLAR":
         primal_first, _ = get_duality_gap_me(
             X, all_epochs, B_first, S_trace_first, S_inv_first,
@@ -200,7 +204,8 @@ def solver_(
         Sigma = Y2 / n_times
         Sigma_inv = linalg.pinvh(Sigma)
         primal_first = get_p_obj_mrce(
-            X, Y, Y2, Sigma, Sigma_inv, alpha, alpha_Sigma_inv, B_first, sigma_min)
+            X, Y, Y2, Sigma, Sigma_inv, alpha,
+            alpha_Sigma_inv, B_first, sigma_min)
     E.append(primal_first)
     print("------------------------")
     print("First primal: %0.2e" % primal_first)
@@ -273,7 +278,9 @@ def solver_(
                             z = np.linalg.solve(C, onesKm1)
                             c = z / z.sum()
                             R_acc = (np.sum(
-                                last_K_res[:-1] * np.expand_dims(c, 1), axis=0)).reshape(n_sensors, n_times, order='F')
+                                last_K_res[:-1] * np.expand_dims(c, 1),
+                                axis=0)).reshape(
+                                    n_sensors, n_times, order='F')
                         except np.linalg.LinAlgError:
                             print("##### linalg failed")
                             R_acc = R
@@ -292,7 +299,8 @@ def solver_(
                     X, Y, B, alpha)
             elif pb_name == "mrce":
                 p_obj = get_p_obj_mrce(
-                    X, Y, Y2, Sigma, Sigma_inv, alpha, alpha_Sigma_inv, B, sigma_min)
+                    X, Y, Y2, Sigma, Sigma_inv, alpha,
+                    alpha_Sigma_inv, B, sigma_min)
             gap = p_obj - d_obj
             E.append(p_obj)
             gaps.append(gap)
@@ -314,7 +322,7 @@ def solver_(
         results = (B, (Sigma, Sigma_inv), np.asarray(E), np.asarray(gaps))
     if use_accel:
         results = (B, S_inv, np.asarray(E),
-                  (np.asarray(gaps), np.asarray(gaps_acc)))
+                   (np.asarray(gaps), np.asarray(gaps_acc)))
     return results
 
 
@@ -424,24 +432,24 @@ def update_sigma_glasso(
         row = emp_cov[idx, indices != idx]
         with np.errstate(**errors):
             # Use coordinate descent
-            coefs = -(precision_[indices != idx, idx]
-                        / (precision_[idx, idx] + 1000 * eps))
+            coefs = -(precision_[indices != idx, idx] /
+                      (precision_[idx, idx] + 1000 * eps))
             coefs, _, _, _ = cd_fast.enet_coordinate_descent_gram(
                 coefs, alpha_Sigma_inv, 0, sub_covariance,
                 row, row, max_iter, enet_tol,
                 check_random_state(None), False)
         # Update the precision matrix
         precision_[idx, idx] = (
-            1. / (covariance_[idx, idx]
-                    - np.dot(covariance_[indices != idx, idx], coefs)))
-        precision_[indices != idx, idx] = (- precision_[idx, idx]
-                                            * coefs)
-        precision_[idx, indices != idx] = (- precision_[idx, idx]
-                                            * coefs)
+            1. / (covariance_[idx, idx] -
+                  np.dot(covariance_[indices != idx, idx], coefs)))
+        precision_[indices != idx, idx] = (- precision_[idx, idx] *
+                                           coefs)
+        precision_[idx, indices != idx] = (- precision_[idx, idx] *
+                                           coefs)
         coefs = np.dot(sub_covariance, coefs)
         covariance_[idx, indices != idx] = coefs
         covariance_[indices != idx, idx] = coefs
     if not np.isfinite(precision_.sum()):
         raise FloatingPointError('The system is too ill-conditioned '
-                                    'for this solver')
+                                 'for this solver')
     return covariance_, precision_

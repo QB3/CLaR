@@ -202,7 +202,7 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         n_channels, n_times = Y.shape
         alpha_max = l_2_inf(X.T @ Y) / (n_times * n_channels)
     elif pb_name == "MTLME":
-        observations = observation.transpose((1,0,2))
+        observations = observation.transpose((1, 0, 2))
         observations = observations.reshape(observations.shape[0], -1)
         alpha_max = get_alpha_max(X, observations, sigma_min, "MTL")
     elif pb_name == "SGCL":
@@ -222,14 +222,14 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         alpha_max /= (n_channels * n_times)
     elif pb_name == "mrce":
         assert observation.ndim == 3
-        assert alpha_Sigma_inv != None
+        assert alpha_Sigma_inv is not None
         emp_cov = get_emp_cov(observation)
         Sigma, Sigma_inv = graphical_lasso(
             emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
     elif pb_name == "glasso":
         assert observation.ndim == 2
-        assert alpha_Sigma_inv != None
+        assert alpha_Sigma_inv is not None
         emp_cov = observation @ observation.T / n_times
         Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
