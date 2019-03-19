@@ -1,18 +1,14 @@
-import copy
 import numpy as np
 
 from numpy.linalg import norm
 from scipy.linalg import toeplitz
 from sklearn.utils import check_random_state
 
-from clar.utils import sqrtm
-
 
 def get_data_me(
-        dictionary_type="Gaussian", noise_type="Gaussian_iid", n_channels=20,
-        n_sources=20, n_times=30, n_epochs=50, n_active=3, rho=0.3,
-        rho_noise=0.6,
-        SNR=1, seed=0):
+        dictionary_type="Gaussian", noise_type="Gaussian_iid",
+        n_channels=20, n_sources=20, n_times=30, n_epochs=50,
+        n_active=3, rho=0.3, rho_noise=0.6, SNR=1, seed=0):
 
     rng = check_random_state(seed)
 
@@ -20,7 +16,8 @@ def get_data_me(
         dictionary_type, n_channels=n_channels,
         n_sources=n_sources, rho=rho, seed=seed)
     Sigma_star = get_Sigma_star(
-        noise_type=noise_type, n_channels=n_channels, rho_noise=rho_noise, seed=seed)
+        noise_type=noise_type, n_channels=n_channels,
+        rho_noise=rho_noise, seed=seed)
 
     rng = check_random_state(seed)
     # creates the signal XB
@@ -33,7 +30,9 @@ def get_data_me(
         n_active=n_active, SNR=SNR, seed=seed)
 
 
-def get_Sigma_star(noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0):
+def get_Sigma_star(
+        noise_type="Gaussian_iid", n_channels=20,
+        rho_noise=0.7, seed=0):
     if noise_type == "Gaussian_iid":
         Sigma_star = np.eye(n_channels)
     elif noise_type == "Gaussian_multivariate":
@@ -42,7 +41,8 @@ def get_Sigma_star(noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed
     return Sigma_star
 
 
-def get_data_from_X_S_and_B_star(X, B_star, S_star, n_epochs=50, n_active=3, SNR=0.5, seed=0):
+def get_data_from_X_S_and_B_star(
+        X, B_star, S_star, n_epochs=50, n_active=3, SNR=0.5, seed=0):
     rng = check_random_state(seed)
     XB = X @ B_star
     n_channels, n_sources = X.shape
@@ -56,7 +56,6 @@ def get_data_from_X_S_and_B_star(X, B_star, S_star, n_epochs=50, n_active=3, SNR
     multiplicativ_factor = norm(XB, ord='fro') / denom
     multiplicativ_factor /= SNR
     noise_all_epochs *= multiplicativ_factor
-
     # add noise to signal
     all_epochs = noise_all_epochs + XB
     return X, all_epochs, B_star, (multiplicativ_factor, S_star)

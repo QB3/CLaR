@@ -2,9 +2,28 @@ import numpy as np
 
 from numba import njit
 from numpy.linalg import norm
+from numpy.linalg import slogdet
 
 from clar.utils import l_2_inf
 from clar.utils import l_2_1
+
+
+def get_p_obj_mrce(
+        X, Y, Y2, Sigma, Sigma_inv, alpha,
+        alpha_Sigma_inv, B, sigma_min):
+    n, q = Y.shape
+    XB = X @ B
+    XBYT = XB @ Y.T
+    emp_cov = (Y2 + XB @ XB.T - XBYT - XBYT.T)
+    emp_cov /= q
+    p_obj = Sigma_inv @ emp_cov
+    p_obj = np.trace(p_obj)
+    p_obj /= n
+    p_obj += alpha_Sigma_inv * np.abs(Sigma_inv).sum()
+    p_obj += alpha * l_2_1(B)
+    logdet_Sigma = slogdet(Sigma)[1]
+    p_obj += logdet_Sigma  # to improve with a log det
+    return p_obj
 
 
 @njit
@@ -46,8 +65,8 @@ def get_d_obj_me(all_epochs, Theta, sigma_min, alpha):
     n_epochs, n_channels, n_times = all_epochs.shape
     d_obj = alpha * (all_epochs * Theta).sum() / n_epochs
     d_obj += sigma_min / 2 * (
-        1 - n_channels * n_times * alpha ** 2. * (Theta ** 2).sum()
-        / n_epochs
+        1 - n_channels * n_times * alpha ** 2. * (Theta ** 2).sum() /
+        n_epochs
     )
     return d_obj
 

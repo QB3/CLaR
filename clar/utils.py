@@ -2,10 +2,11 @@ import numpy as np
 
 from numba import njit
 from numpy.linalg import norm
-from numpy.linalg import solve
+
+from sklearn.covariance import graphical_lasso
 
 
-# @njit
+@njit
 def sqrtm(ZZT):
     """Take the square root of a symetrique definite matrix.
 
@@ -20,7 +21,8 @@ def sqrtm(ZZT):
 
 
 def get_S_Sinv(ZZT, sigma_min=1e-6):
-    """Take the square root and inverse of squre root of a symetrique definite matrix.
+    """Take the square root and inverse of squre root of a
+    symetrique definite matrix.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
@@ -67,22 +69,49 @@ def BST(u, tau):
 
 
 @njit
-def condition_better(ZZT, sigma_min):
+def clp_sqrt(ZZT, sigma_min):
     """Update Sigma by conditionning it better.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
      """
     eigvals, eigvecs = np.linalg.eigh(ZZT)
-
-    n_eigvals_clipped = (eigvals < sigma_min).sum()
-    bool_reach_sigma_min = n_eigvals_clipped > 0
-
     eigvals = np.maximum(0, eigvals)
     eigvals = np.maximum(np.sqrt(eigvals), sigma_min)
     eigvals = np.expand_dims(eigvals, axis=1)
     return eigvals.sum(), \
         eigvecs @ (1 / eigvals * eigvecs.T)
+
+
+@njit
+def condition_better_glasso(ZZT, sigma_min):
+    """Update ZZT by conditionning it better.
+
+    Parameters:
+    ----------
+    ZZT: np.array, shape (n_channels, n_channels)
+        real, positiv definite symmetric matrix
+
+    Output:
+    -------
+    (float,  np.array, shape (n_channels, n_channels))
+        (trace of S updated, inverse of S updated)
+     """
+    eigvals, eigvecs = np.linalg.eigh(ZZT)
+
+    n_eigvals_clipped = (eigvals < sigma_min).sum()
+    bool_reach_sigma_min = n_eigvals_clipped > 0
+    if bool_reach_sigma_min:
+        print("---------------------------------------")
+        print("warning, be carefull, you reached sigmamin")
+        print(n_eigvals_clipped, " eigenvalues clipped")
+        print("---------------------------------------")
+    else:
+        print("You did not reach sigmamin")
+    eigvals = np.maximum(eigvals, sigma_min)
+    eigvals = np.expand_dims(eigvals, axis=1)
+    return np.log(eigvals).sum(), \
+        eigvecs @ (eigvals * eigvecs.T)
 
 
 @njit
@@ -99,11 +128,9 @@ def l_2_inf(A):
         the l_2_inf norm of A
     """
     res = 0.
-    # row_norm = 0.
     for j in range(A.shape[0]):
         res = max(res, norm(A[j, :]))
     return res
-    # return norm(A, axis=1, ord=2).max()
 
 
 @njit
@@ -132,28 +159,92 @@ def get_alpha_max_mtl(X, Y):
     return alpha_max
 
 
-def get_alpha_max(X, Y, sigma_min, solver_name):
-    if solver_name == "SGCL":
-        assert Y.ndim == 2
-        return get_alpha_max_sgcl(X, Y, sigma_min)
-    elif solver_name == "CLAR":
-        return get_alpha_max_me(X, Y, sigma_min)
-    elif solver_name == "MTL":
-        return get_alpha_max_mtl(X, Y)
-    elif solver_name == "MTLME":
-        observations = Y.transpose((1, 0, 2))
-        observations = observations.reshape(observations.shape[0], -1)
-        return get_alpha_max_mtl(X, observations)
+def get_emp_cov(R):
+    assert(R.ndim == 3)
+    n_epochs, n_channels, n_times = R.shape
+    emp_cov = np.zeros((n_channels, n_channels))
+    for l in range(n_epochs):
+        emp_cov += R[l, :, :] @ R[l, :, :].T
+    emp_cov /= (n_epochs * n_times)
+    return emp_cov
+
+
+def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
+    """Compute alpha_max specific to pb_name.
+
+    Parameters:
+    ----------
+    X: np.array, shape (n_channels, n_sources)
+    observation: np.array, shape (n_channels, n_times) or
+    (n_epochs, n_channels, n_times)
+    sigma_min: float, >0
+    pb_name: string, "SGCL" "CLaR" "MTL" "MTLME"
+
+    Output:
+    -------
+    float
+        alpha_max of the optimization problem.
+    """
+    n_channels, n_times = observation.shape[-2], observation.shape[-1]
+
+    if observation.ndim == 3:
+        Y = observation.mean(axis=0)
     else:
-        raise NotImplementedError("No solver '{}' in this module"
-                                  .format(solver_name))
+        Y = observation
+
+    if pb_name == "MTL":
+        n_channels, n_times = Y.shape
+        alpha_max = l_2_inf(X.T @ Y) / (n_times * n_channels)
+    elif pb_name == "MTLME":
+        observations = observation.transpose((1, 0, 2))
+        observations = observations.reshape(observations.shape[0], -1)
+        alpha_max = get_alpha_max(X, observations, sigma_min, "MTL")
+    elif pb_name == "SGCL":
+        assert observation.ndim == 2
+        _, S_max_inv = clp_sqrt(Y @ Y.T / n_times, sigma_min)
+        alpha_max = l_2_inf(X.T @ S_max_inv @ Y)
+        alpha_max /= (n_channels * n_times)
+    elif pb_name == "CLAR" or pb_name == "NNCVX":
+        n_epochs = observation.shape[0]
+        cov_Yl = 0
+        for l in range(n_epochs):
+            cov_Yl += observation[l, :, :] @ observation[l, :, :].T
+        cov_Yl /= (n_epochs * n_times)
+        _, S_max_inv = clp_sqrt(
+            cov_Yl, sigma_min)
+        alpha_max = l_2_inf(X.T @ S_max_inv @ Y)
+        alpha_max /= (n_channels * n_times)
+    elif pb_name == "mrce":
+        assert observation.ndim == 3
+        assert alpha_Sigma_inv is not None
+        emp_cov = get_emp_cov(observation)
+        Sigma, Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
+    elif pb_name == "glasso":
+        assert observation.ndim == 2
+        assert alpha_Sigma_inv is not None
+        emp_cov = observation @ observation.T / n_times
+        Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)
+        alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
+    elif pb_name == "mrce":
+        assert observation.ndim == 2
+        assert alpha_Sigma_inv is not None
+        emp_cov = observation @ observation.T / n_times
+        Sigma, Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        alpha_max = np.abs(X.T @ Sigma_inv @ Y).max() / (n_channels * n_times)
+    else:
+        raise NotImplementedError(
+            "No solver '{}' in sgcl".format(pb_name))
+    return alpha_max
 
 
 def get_alpha_max_sgcl(X, Y, sigma_min):
     """Function to compute the maximal alpha before obtaining all zeros.
     """
     n_sensors, n_times = Y.shape
-    _, Sigma_max_inv = condition_better(
+    _, Sigma_max_inv = clp_sqrt(
         Y @ Y.T / n_times, sigma_min)
     result = l_2_inf(X.T @ Sigma_max_inv @ Y)
     result /= (n_sensors * n_times)
@@ -171,7 +262,7 @@ def get_alpha_max_me(X, all_epochs, sigma_min):
         cov_Yl += all_epochs[l, :, :] @ all_epochs[l, :, :].T
     cov_Yl /= (n_epochs * n_times)
 
-    _, Sigma_max_inv = condition_better(
+    _, Sigma_max_inv = clp_sqrt(
         cov_Yl, sigma_min)
     result = l_2_inf(X.T @ Sigma_max_inv @ Y)
     result /= (n_sensors * n_times)
