@@ -1,7 +1,6 @@
 import numpy as np
 
 from numba import njit
-from numpy.linalg import norm
 from scipy import linalg
 
 from sklearn.linear_model import cd_fast
@@ -121,7 +120,6 @@ def solver(
     else:
         B = B0.copy().astype(np.float64)
 
-
     if pb_name in ("SGCL", "MTL"):
         if all_epochs.ndim != 2:
             raise ValueError("Wrong number of dimensions, expected 2, "
@@ -149,8 +147,8 @@ def solver(
 
 
 def solver_(
-        all_epochs, X, alpha, alpha_max,  sigma_min, B, n_iter, gap_freq, use_accel,
-        active_set_freq=5, S_freq=10, tol=10**-4,
+        all_epochs, X, alpha, alpha_max,  sigma_min, B, n_iter, gap_freq,
+        use_accel, active_set_freq=5, S_freq=10, tol=10**-4,
         pb_name="CLAR", verbose=True, heur_stop=False, alpha_Sigma_inv=0.01):
     gaps = []
     gaps_acc = []
@@ -263,8 +261,6 @@ def solver_(
                     else:
                         for k in range(K - 1):
                             last_K_res[k] = last_K_res[k + 1]
-                        # there is no order=F for the ravel function in numba
-                        # see https://numba.pydata.org/numba-doc/dev/reference/numpysupported.html
                         last_K_res[K - 1] = R.ravel(order='F')
                         R_acc = R
 
@@ -309,14 +305,15 @@ def solver_(
             heuristic_stopping_criterion = False
         if gap < tol * E[0] or \
             (use_accel and (p_obj - d_obj_acc < tol * E[0])) \
-            or heuristic_stopping_criterion:
+                or heuristic_stopping_criterion:
             break
     if pb_name != "mrce":
         results = (B, S_inv, np.asarray(E), np.asarray(gaps))
     else:
         results = (B, (Sigma, Sigma_inv), np.asarray(E), np.asarray(gaps))
     if use_accel:
-        results = (B, S_inv, np.asarray(E), (np.asarray(gaps),np.asarray(gaps_acc)))
+        results = (B, S_inv, np.asarray(E),
+                  (np.asarray(gaps), np.asarray(gaps_acc)))
     return results
 
 
@@ -387,12 +384,11 @@ def update_B(
                     S_inv_R -= S_inv_X[:, j:j+1] @ B[j:j+1, :]
 
 
-
 def update_sigma_glasso(
-    emp_cov, alpha_Sigma_inv, cov_init=None, mode='cd', tol=1e-4,
-    enet_tol=1e-4, sigmamin=1e-4, max_iter=1e4, verbose=False,
-    return_costs=False, eps=np.finfo(np.float64).eps,
-    return_n_iter=False):
+        emp_cov, alpha_Sigma_inv, cov_init=None, mode='cd', tol=1e-4,
+        enet_tol=1e-4, sigmamin=1e-4, max_iter=1e4, verbose=False,
+        return_costs=False, eps=np.finfo(np.float64).eps,
+        return_n_iter=False):
     _, n_features = emp_cov.shape
     if cov_init is None:
         covariance_ = emp_cov.copy()
@@ -400,11 +396,11 @@ def update_sigma_glasso(
     else:
         covariance_ = cov_init.copy()
     # As a trivial regularization (Tikhonov like), we scale down the
-    # off-diagonal coefficients of our starting point: This is needed, as
-    # in the cross-validation the cov_init can easily be
+    # off-diagonal coefficients of our starting point: This is needed,
+    #  as in the cross-validation the cov_init can easily be
     # ill-conditioned, and the CV loop blows. Beside, this takes
-    # conservative stand-point on the initial conditions, and it tends to
-    # make the convergence go faster.
+    # conservative stand-point on the initial conditions, and it tends
+    # to make the convergence go faster.
     covariance_ *= 0.95
     diagonal = emp_cov.flat[::n_features + 1]
     covariance_.flat[::n_features + 1] = diagonal
