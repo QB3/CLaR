@@ -2,6 +2,7 @@ language: python
 
 env:
   - PYTHON_VERSION=3.6
+  - PYTHON_VERSION=2.7
 
 before_install:
   - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -10,15 +11,15 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
 install:
-  - conda env create --file environment.yml python=${PYTHON_VERSION}
-  - source activate CLaR-env
+  - conda create -n clar-env python=${PYTHON_VERSION} -y
+  - conda env update --file environment.yml
+  - source activate clar-env
   - conda install --yes --quiet pytest pytest-cov coverage
   - pip install flake8 check-manifest
   - pip install codecov
   - python setup.py build_ext --inplace
   - pip install -e .
 script:
-  # - pytest -lv --cov-report term-missing celer --cov=celer --cov-config .coveragerc
-  - flake8 --count celer
+  - flake8 --count clar
 after_success:
   - codecov
