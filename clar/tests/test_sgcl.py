@@ -1,7 +1,4 @@
 import numpy as np
-from numpy.linalg import norm
-# import matplotlib.pyplot as plt
-import time
 
 from clar.solvers import solver
 from clar.utils import get_alpha_max, get_sigma_min
@@ -44,8 +41,8 @@ def tests_sgcl(
 
     log_gap = np.log10(gaps[-1])
     log_gap_accel = np.log10(gaps_accel[-1])
-    assert log_gap_accel < np.log10(tol) * E[0] or
-    log_gap < np.log10(tol) * E[0]
+    assert log_gap_accel < np.log10(tol) * E[0] or \
+        log_gap < np.log10(tol) * E[0]
 
 
 if __name__ == '__main__':

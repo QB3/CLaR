@@ -334,21 +334,15 @@ def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
         YXB = Y @ XB.T
         ZZT = (Y2 - YXB - YXB.T + XB @ XB.T) / n_times
         S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
-        S_inv_R = np.asfortranarray(S_inv @ R)
-        S_inv_X = S_inv @ X
     elif pb_name == "SGCL":
         Z = Y - X @ B
         ZZT = Z @ Z.T / n_times
         S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
-        S_inv_R = np.asfortranarray(S_inv @ R)
-        S_inv_X = S_inv @ X
     elif pb_name == "MTL" or pb_name == "MTLME":
         # this else case is for MTL
         # dummy variables for njit to work:
         S_trace = n_sensors
         S_inv = np.eye(1)
-        S_inv_R = R
-        S_inv_X = X
     return S_trace, S_inv
 
 

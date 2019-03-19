@@ -2,8 +2,6 @@ import numpy as np
 
 from numba import njit
 from numpy.linalg import norm
-from numpy.linalg import solve
-from scipy import linalg
 
 from sklearn.covariance import graphical_lasso
 
@@ -78,10 +76,6 @@ def clp_sqrt(ZZT, sigma_min):
         (trace of Sigma updated, inverse of Sigma updated)
      """
     eigvals, eigvecs = np.linalg.eigh(ZZT)
-
-    n_eigvals_clipped = (eigvals < sigma_min).sum()
-    bool_reach_sigma_min = n_eigvals_clipped > 0
-
     eigvals = np.maximum(0, eigvals)
     eigvals = np.maximum(np.sqrt(eigvals), sigma_min)
     eigvals = np.expand_dims(eigvals, axis=1)
@@ -268,7 +262,7 @@ def get_alpha_max_me(X, all_epochs, sigma_min):
         cov_Yl += all_epochs[l, :, :] @ all_epochs[l, :, :].T
     cov_Yl /= (n_epochs * n_times)
 
-    _, Sigma_max_inv = condition_better(
+    _, Sigma_max_inv = clp_sqrt(
         cov_Yl, sigma_min)
     result = l_2_inf(X.T @ Sigma_max_inv @ Y)
     result /= (n_sensors * n_times)
