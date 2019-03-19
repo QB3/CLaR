@@ -22,7 +22,6 @@ def get_p_obj_mrce(
     p_obj += alpha_Sigma_inv * np.abs(Sigma_inv).sum()
     p_obj += alpha * l_2_1(B)
     logdet_Sigma = slogdet(Sigma)[1]
-    # logdet_Sigma, _ = update_sigma_glasso(Sigma, sigma_min)
     p_obj += logdet_Sigma  # to improve with a log det
     return p_obj
 
@@ -66,8 +65,8 @@ def get_d_obj_me(all_epochs, Theta, sigma_min, alpha):
     n_epochs, n_channels, n_times = all_epochs.shape
     d_obj = alpha * (all_epochs * Theta).sum() / n_epochs
     d_obj += sigma_min / 2 * (
-        1 - n_channels * n_times * alpha ** 2. * (Theta ** 2).sum()
-        / n_epochs
+        1 - n_channels * n_times * alpha ** 2. * (Theta ** 2).sum() /
+        n_epochs
     )
     return d_obj
 

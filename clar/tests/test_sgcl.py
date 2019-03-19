@@ -49,5 +49,3 @@ def tests_sgcl(
 
 if __name__ == '__main__':
     test_sgcl1()
-    # tests_sgcl()
-    # test_get_data()

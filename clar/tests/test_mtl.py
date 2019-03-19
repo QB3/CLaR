@@ -31,7 +31,6 @@ def test_mtl():
     gap = gaps[-1]
     np.testing.assert_array_less(gap, tol)
 
-    # test init
     _, _, E, gaps = solver(
         X, Y, alpha, alpha_max, sigma_min, B0=B_mtl,
         tol=tol, pb_name=pb_name, n_iter=10000)

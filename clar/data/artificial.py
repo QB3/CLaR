@@ -117,7 +117,9 @@ def get_S_star(
         return S_star
 
 
-def get_data_from_X_S_and_B_star(X, B_star, S_star, n_epochs=50, n_active=3, SNR=0.5, seed=0):
+def get_data_from_X_S_and_B_star(
+        X, B_star, S_star, n_epochs=50,
+        n_active=3, SNR=0.5, seed=0):
     rng = check_random_state(seed)
     XB = X @ B_star
     n_channels, n_sources = X.shape

@@ -7,7 +7,8 @@ from scipy import linalg
 
 from sklearn.covariance import graphical_lasso
 
-# @njit
+
+@njit
 def sqrtm(ZZT):
     """Take the square root of a symetrique definite matrix.
 
@@ -22,7 +23,8 @@ def sqrtm(ZZT):
 
 
 def get_S_Sinv(ZZT, sigma_min=1e-6):
-    """Take the square root and inverse of squre root of a symetrique definite matrix.
+    """Take the square root and inverse of squre root of a
+    symetrique definite matrix.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
@@ -103,7 +105,7 @@ def condition_better_glasso(ZZT, sigma_min):
      """
     eigvals, eigvecs = np.linalg.eigh(ZZT)
 
-    n_eigvals_clipped = (eigvals < sigma_min ).sum()
+    n_eigvals_clipped = (eigvals < sigma_min).sum()
     bool_reach_sigma_min = n_eigvals_clipped > 0
     if bool_reach_sigma_min:
         print("---------------------------------------")
@@ -132,11 +134,9 @@ def l_2_inf(A):
         the l_2_inf norm of A
     """
     res = 0.
-    # row_norm = 0.
     for j in range(A.shape[0]):
         res = max(res, norm(A[j, :]))
     return res
-    # return norm(A, axis=1, ord=2).max()
 
 
 @njit
@@ -165,7 +165,6 @@ def get_alpha_max_mtl(X, Y):
     return alpha_max
 
 
-
 def get_emp_cov(R):
     assert(R.ndim == 3)
     n_epochs, n_channels, n_times = R.shape
@@ -182,7 +181,8 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
     Parameters:
     ----------
     X: np.array, shape (n_channels, n_sources)
-    observation: np.array, shape (n_channels, n_times) or (n_epochs, n_channels, n_times)
+    observation: np.array, shape (n_channels, n_times) or
+    (n_epochs, n_channels, n_times)
     sigma_min: float, >0
     pb_name: string, "SGCL" "CLaR" "MTL" "MTLME"
 
@@ -224,7 +224,8 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         assert observation.ndim == 3
         assert alpha_Sigma_inv != None
         emp_cov = get_emp_cov(observation)
-        Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        Sigma, Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
     elif pb_name == "glasso":
         assert observation.ndim == 2
@@ -234,13 +235,14 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
     elif pb_name == "mrce":
         assert observation.ndim == 2
-        assert alpha_Sigma_inv != None
+        assert alpha_Sigma_inv is not None
         emp_cov = observation @ observation.T / n_times
-        Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        Sigma, Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
         alpha_max = np.abs(X.T @ Sigma_inv @ Y).max() / (n_channels * n_times)
     else:
-        raise NotImplementedError("No solver '{}' in sgcl"
-                            .format(pb_name))
+        raise NotImplementedError(
+            "No solver '{}' in sgcl".format(pb_name))
     return alpha_max
 
 

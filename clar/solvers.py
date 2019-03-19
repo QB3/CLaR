@@ -56,7 +56,8 @@ def solver(
         X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
         S_freq=10, pb_name="CLAR", use_accel=False,
-        n_nncvx_iter=10, verbose=True, heur_stop=False, alpha_Sigma_inv=0.0001):
+        n_nncvx_iter=10, verbose=True, heur_stop=False,
+        alpha_Sigma_inv=0.0001):
     """
     Parameters
     --------------
@@ -252,7 +253,7 @@ def solver_(
             elif pb_name == "SGCL":
                 p_obj, d_obj = get_duality_gap(
                     R, X, Y, B, S_trace,
-                    S_inv_R, sigma_min, alpha   )
+                    S_inv_R, sigma_min, alpha)
 
                 if use_accel:
                     if t // gap_freq < K:
@@ -444,4 +445,3 @@ def update_sigma_glasso(
         raise FloatingPointError('The system is too ill-conditioned '
                                     'for this solver')
     return covariance_, precision_
-

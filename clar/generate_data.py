@@ -56,7 +56,6 @@ def get_data_from_X_S_and_B_star(
     multiplicativ_factor = norm(XB, ord='fro') / denom
     multiplicativ_factor /= SNR
     noise_all_epochs *= multiplicativ_factor
-
     # add noise to signal
     all_epochs = noise_all_epochs + XB
     return X, all_epochs, B_star, (multiplicativ_factor, S_star)

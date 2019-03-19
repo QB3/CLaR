@@ -27,7 +27,7 @@ def test_clar(
     Y = np.mean(all_epochs, axis=0)
     sigma_min = get_sigma_min(Y)
     alpha_max = get_alpha_max(X, all_epochs, sigma_min, pb_name="CLAR")
-    alpha =  alpha_max * \
+    alpha = alpha_max * \
         alpha_under_alpha_max
 
     print("alpha = %.2e" % alpha)
