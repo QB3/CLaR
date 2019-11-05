@@ -18,7 +18,7 @@ install:
   - python setup.py build_ext --inplace
   - pip install -e .
 script:
-  - pytest
+  - pytest -lv --cov-report term-missing clar --cov=clar --cov-config .coveragerc
   - flake8 --count clar
 after_success:
   - codecov
