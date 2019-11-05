@@ -1,7 +1,7 @@
 CLaR
 =====
 
-|image0|
+|image0| |image1|
 
 This package implements the CLaR alorithm, a fast algorithm to handle sparse linear regression with heteroscedastic noise, see:
 Bertrand, Q., Massias, M., Gramfort, A., & Salmon, J. (2019). Handling correlated and repeated measurements with the smoothed Multivariate square-root Lasso. NeurIPS (2019). arXiv preprint arXiv:1902.02509.
@@ -21,3 +21,6 @@ ArXiv link: https://export.arxiv.org/abs/1902.02509
 
 .. |image0| image:: https://travis-ci.org/QB3/CLaR.svg?branch=master
    :target: https://travis-ci.org/QB3/CLaR/
+
+.. |image1| image:: https://codecov.io/gh/QB3/CLaR/branch/master/graphs/badge.svg?branch=master
+   :target: https://codecov.io/gh/QB3/CLaR
