@@ -2,7 +2,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Plot an estimate of the covariance matrix with CLaR &#8212; clar 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -122,57 +123,27 @@
     <div class="col-md-9 content">
       
   <div class="sphx-glr-download-link-note admonition note">
-<p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-covariance-estimate-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-covariance-estimate-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="plot-an-estimate-of-the-covariance-matrix-with-clar">
 <span id="sphx-glr-auto-examples-plot-covariance-estimate-py"></span><h1>Plot an estimate of the covariance matrix with CLaR<a class="headerlink" href="#plot-an-estimate-of-the-covariance-matrix-with-clar" title="Permalink to this headline">¶</a></h1>
 <p>The example runs CLaR on simulated data.</p>
 <img alt="../_images/sphx_glr_plot_covariance_estimate_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_covariance_estimate_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/mathurin/workspace/scikit-learn/sklearn/utils/deprecation.py:143: DeprecationWarning: The sklearn.linear_model.cd_fast module is  deprecated in version 0.22 and will be removed in version 0.24. The corresponding classes / functions should instead be imported from sklearn.linear_model. Anything that cannot be imported from sklearn.linear_model is now part of the private API.
-  warnings.warn(message, DeprecationWarning)
-/home/mathurin/workspace/CLaR/clar/utils.py:83: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, C))
-  eigvecs @ (1 / eigvals * eigvecs.T)
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, C))
-  warnings.warn(NumbaPerformanceWarning(msg))
-alpha = 1.53e-03
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>alpha = 1.53e-03
 sigma_min = 4.00e-04
 --------- CLAR -----------------
-/home/mathurin/workspace/CLaR/clar/duality_gap.py:150: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, C), array(float64, 2d, A))
-  S_inv_R[l, :, :] = S_inv @ R_all_epochs[l, :, :]
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, C), array(float64, 2d, A))
-  warnings.warn(NumbaPerformanceWarning(msg))
 ------------------------
 First primal: 7.78e-01
-/home/mathurin/workspace/CLaR/clar/solvers.py:363: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 1d, F), array(float64, 1d, A))
-  L[j] = X[:, j] @ S_inv_X[:, j]
-/home/mathurin/workspace/CLaR/clar/solvers.py:375: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  R += X[:, j:j+1] @ B[j:j+1, :]
-/home/mathurin/workspace/CLaR/clar/solvers.py:377: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  S_inv_R += S_inv_X[:, j:j+1] @ B[j:j+1, :]
-/home/mathurin/workspace/CLaR/clar/solvers.py:380: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, F))
-  X[:, j:j+1].T @ S_inv_R / L[j],
-/home/mathurin/workspace/CLaR/clar/solvers.py:385: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  R -= X[:, j:j+1] @ B[j:j+1, :]
-/home/mathurin/workspace/CLaR/clar/solvers.py:387: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  S_inv_R -= S_inv_X[:, j:j+1] @ B[j:j+1, :]
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 1d, F), array(float64, 1d, A))
-  warnings.warn(NumbaPerformanceWarning(msg))
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  warnings.warn(NumbaPerformanceWarning(msg))
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, F))
-  warnings.warn(NumbaPerformanceWarning(msg))
-/home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: &#39;@&#39; is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
-  warnings.warn(NumbaPerformanceWarning(msg))
 p_obj: 7.401050e-01
 d_obj: 6.786024e-01
 iteration: 0, gap: 6.1503e-02
 p_obj: 7.219445e-01
 d_obj: 7.219445e-01
 iteration: 50, gap: 2.2396e-08
-/home/mathurin/workspace/CLaR/examples/plot_covariance_estimate.py:72: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-  plt.show(block=False)
+/home/qbe/anaconda3/envs/mne/lib/python3.6/site-packages/matplotlib/figure.py:445: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  % get_backend())
 TP: 3
 FP: 3
 </pre></div>
@@ -187,7 +158,7 @@ FP: 3
 
 <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">norm</span>
 
-<span class="kn">from</span> <span class="nn">clar.solvers</span> <span class="k">import</span> <a href="../generated/clar.solver.html#clar.solver" title="View documentation for clar.solvers.solver"><span class="n">solver</span></a>
+<span class="kn">from</span> <span class="nn">clar.solvers</span> <span class="k">import</span> <span class="n">solver</span>
 <span class="kn">from</span> <span class="nn">clar.utils</span> <span class="k">import</span> <span class="n">get_alpha_max_me</span><span class="p">,</span> <span class="n">get_sigma_min</span><span class="p">,</span> <span class="n">get_alpha_max</span>
 <span class="kn">from</span> <span class="nn">clar.data.artificial</span> <span class="k">import</span> <span class="n">get_data_me</span>
 <span class="kn">from</span> <span class="nn">clar.utils</span> <span class="k">import</span> <span class="n">get_sigma_min</span><span class="p">,</span> <span class="n">get_alpha_max</span>
@@ -213,7 +184,7 @@ FP: 3
     <span class="n">SNR</span><span class="o">=</span><span class="n">SNR</span><span class="p">)</span>
 <span class="n">S_star</span> <span class="o">=</span> <span class="n">S_star</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<span class="n">Y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">all_epochs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a></a><span class="p">(</span><span class="n">all_epochs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sigma_min</span> <span class="o">=</span> <span class="n">get_sigma_min</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 
 
@@ -222,7 +193,7 @@ FP: 3
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;alpha = </span><span class="si">%.2e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">alpha</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sigma_min = </span><span class="si">%.2e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sigma_min</span><span class="p">)</span>
-<span class="n">B_clar</span><span class="p">,</span> <span class="n">S_inv</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">gaps_me</span> <span class="o">=</span> <a href="../generated/clar.solver.html#clar.solver" title="View documentation for clar.solvers.solver"><span class="n">solver</span></a><span class="p">(</span>
+<span class="n">B_clar</span><span class="p">,</span> <span class="n">S_inv</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">gaps_me</span> <span class="o">=</span> <span class="n">solver</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">all_epochs</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">alpha_max</span><span class="p">,</span> <span class="n">sigma_min</span><span class="p">,</span> <span class="n">B0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">n_iter</span><span class="o">=</span><span class="n">n_iter</span><span class="p">,</span> <span class="n">gap_freq</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">S_freq</span><span class="o">=</span><span class="n">update_S_freq</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">pb_name</span><span class="o">=</span><span class="s2">&quot;CLAR&quot;</span><span class="p">)</span>
@@ -230,12 +201,12 @@ FP: 3
 <span class="k">assert</span> <span class="n">gap_me</span> <span class="o">&lt;</span> <span class="n">tol</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span></a><span class="p">[</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span></a></a><span class="p">[</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="k">pass</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">S</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><span class="n">S_inv</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a></a><span class="p">(</span><span class="n">S_inv</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$S^*$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\hat S^{\mathrm</span><span class="si">{CLaR}</span><span class="s2">}$&quot;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axarr</span><span class="p">,</span> <span class="p">[</span><span class="n">S_star</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="n">labels</span><span class="p">):</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
@@ -243,28 +214,26 @@ FP: 3
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<span class="n">supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">B_clar</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">true_supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">B_star</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a></a><span class="p">(</span><span class="n">B_clar</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">true_supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a></a><span class="p">(</span><span class="n">B_star</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<span class="n">TP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span></a><span class="p">(</span><span class="n">supp</span><span class="p">,</span> <span class="n">true_supp</span><span class="p">))</span>
+<span class="n">TP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span></a></a><span class="p">(</span><span class="n">supp</span><span class="p">,</span> <span class="n">true_supp</span><span class="p">))</span>
 <span class="n">FP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">supp</span><span class="p">)</span> <span class="o">-</span> <span class="n">TP</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TP: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">TP</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FP: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">TP</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.352 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.266 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-covariance-estimate-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/06a9f915c76edc27e2c181d241128018/plot_covariance_estimate.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_covariance_estimate.py</span></code></a></p>
-</div>
+<a class="reference download internal" download="" href="../_downloads/0794c1ead83d61839b826bcc5e0b41fc/plot_covariance_estimate.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_covariance_estimate.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/64176686e5f71953cae3776b72b4cdfa/plot_covariance_estimate.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_covariance_estimate.ipynb</span></code></a></p>
-</div>
+<a class="reference download internal" download="" href="../_downloads/190bf2d98c343fd5c22073c5dc64fd20/plot_covariance_estimate.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_covariance_estimate.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -282,7 +251,7 @@ FP: 3
     </p>
     <p>
         &copy; Copyright 2019, Quentin Bertrand, Mathurin Massias.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
     </p>
   </div>
 </footer>

@@ -1,6 +1,0 @@
-clar.solver
-===========
-
-.. currentmodule:: clar
-
-.. autofunction:: solver

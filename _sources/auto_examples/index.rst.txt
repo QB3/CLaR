@@ -17,7 +17,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The example runs CLaR on simulated data.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The example runs CLaR on simulated data. ">
 
 .. only:: html
 
@@ -48,13 +48,13 @@ Examples Gallery
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/mathurin/workspace/CLaR/doc/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/qbe/CLaR/doc/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/mathurin/workspace/CLaR/doc/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/qbe/CLaR/doc/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html
