@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -45,7 +46,7 @@
             
                 <li><a href="index.html">Examples</a></li>
                 <li><a href="../api.html">API</a></li>
-                <li><a href="https://github.com/QB3/clar">GitHub</a></li>
+                <li><a href="https://github.com/qb3/clar">GitHub</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -56,7 +57,10 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"></ul>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+</ul>
 </li>
               
                 <li class="dropdown">
@@ -100,28 +104,8 @@
     </div>
   </div>
 
-<div class="container">
-  <div class="row">
-      <div class="col-md-3">
-        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
-<li><a class="reference internal" href="#">Plot an estimate of the covariance matrix with CLaR</a></li>
-</ul>
-
-<div id="sourcelink">
-  <a href="../_sources/auto_examples/plot_covariance_estimate.rst.txt"
-     rel="nofollow">Source</a>
-</div>
-<form action="../search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-        </div>
-      </div>
-    <div class="col-md-9 content">
-      
+<div class="container content-container">
+  
   <div class="sphx-glr-download-link-note admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-covariance-estimate-py"><span class="std std-ref">here</span></a> to download the full example code</p>
@@ -184,7 +168,7 @@ FP: 3
     <span class="n">SNR</span><span class="o">=</span><span class="n">SNR</span><span class="p">)</span>
 <span class="n">S_star</span> <span class="o">=</span> <span class="n">S_star</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<span class="n">Y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a></a><span class="p">(</span><span class="n">all_epochs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">all_epochs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sigma_min</span> <span class="o">=</span> <span class="n">get_sigma_min</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 
 
@@ -201,12 +185,12 @@ FP: 3
 <span class="k">assert</span> <span class="n">gap_me</span> <span class="o">&lt;</span> <span class="n">tol</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span></a></a><span class="p">[</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <a href="https://matplotlib.org/api/matplotlib_configuration_api.html#matplotlib.rcParams" title="View documentation for matplotlib.rcParams"><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span></a><span class="p">[</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="k">pass</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">S</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a></a><span class="p">(</span><span class="n">S_inv</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="View documentation for numpy.linalg.inv"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><span class="n">S_inv</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$S^*$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\hat S^{\mathrm</span><span class="si">{CLaR}</span><span class="s2">}$&quot;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axarr</span><span class="p">,</span> <span class="p">[</span><span class="n">S_star</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="n">labels</span><span class="p">):</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
@@ -214,14 +198,14 @@ FP: 3
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<span class="n">supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a></a><span class="p">(</span><span class="n">B_clar</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">true_supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a></a><span class="p">(</span><span class="n">B_star</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">B_clar</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">true_supp</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.where.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">B_star</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<span class="n">TP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span></a></a><span class="p">(</span><span class="n">supp</span><span class="p">,</span> <span class="n">true_supp</span><span class="p">))</span>
+<span class="n">TP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.intersect1d.html#numpy.intersect1d" title="View documentation for numpy.intersect1d"><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span></a><span class="p">(</span><span class="n">supp</span><span class="p">,</span> <span class="n">true_supp</span><span class="p">))</span>
 <span class="n">FP</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">supp</span><span class="p">)</span> <span class="o">-</span> <span class="n">TP</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TP: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">TP</span><span class="p">)</span>
@@ -239,10 +223,13 @@ FP: 3
 </div>
 
 
-    </div>
-      
-  </div>
 </div>
+
+<!-- Github "fork me" ribbon -->
+<a href="https://github.com/mathurinm/celer"><img style="position: absolute; top: 50px; right: 0; border: 0;"
+src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+alt="Fork me on GitHub"
+data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
 <footer class="footer">
   <div class="container">
     <p class="pull-right">
