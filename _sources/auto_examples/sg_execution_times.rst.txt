@@ -5,6 +5,6 @@
 
 Computation times
 =================
-**00:07.266** total execution time for **auto_examples** files:
+**00:08.352** total execution time for **auto_examples** files:
 
-- **00:07.266**: :ref:`sphx_glr_auto_examples_plot_covariance_estimate.py` (``plot_covariance_estimate.py``)
+- **00:08.352**: :ref:`sphx_glr_auto_examples_plot_covariance_estimate.py` (``plot_covariance_estimate.py``)

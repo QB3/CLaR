@@ -25,19 +25,49 @@ The example runs CLaR on simulated data.
 
  .. code-block:: none
 
+    /home/mathurin/workspace/scikit-learn/sklearn/utils/deprecation.py:143: DeprecationWarning: The sklearn.linear_model.cd_fast module is  deprecated in version 0.22 and will be removed in version 0.24. The corresponding classes / functions should instead be imported from sklearn.linear_model. Anything that cannot be imported from sklearn.linear_model is now part of the private API.
+      warnings.warn(message, DeprecationWarning)
+    /home/mathurin/workspace/CLaR/clar/utils.py:83: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, C))
+      eigvecs @ (1 / eigvals * eigvecs.T)
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, C))
+      warnings.warn(NumbaPerformanceWarning(msg))
     alpha = 1.53e-03
     sigma_min = 4.00e-04
     --------- CLAR -----------------
+    /home/mathurin/workspace/CLaR/clar/duality_gap.py:150: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, C), array(float64, 2d, A))
+      S_inv_R[l, :, :] = S_inv @ R_all_epochs[l, :, :]
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, C), array(float64, 2d, A))
+      warnings.warn(NumbaPerformanceWarning(msg))
     ------------------------
     First primal: 7.78e-01
+    /home/mathurin/workspace/CLaR/clar/solvers.py:363: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 1d, F), array(float64, 1d, A))
+      L[j] = X[:, j] @ S_inv_X[:, j]
+    /home/mathurin/workspace/CLaR/clar/solvers.py:375: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      R += X[:, j:j+1] @ B[j:j+1, :]
+    /home/mathurin/workspace/CLaR/clar/solvers.py:377: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      S_inv_R += S_inv_X[:, j:j+1] @ B[j:j+1, :]
+    /home/mathurin/workspace/CLaR/clar/solvers.py:380: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, F))
+      X[:, j:j+1].T @ S_inv_R / L[j],
+    /home/mathurin/workspace/CLaR/clar/solvers.py:385: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      R -= X[:, j:j+1] @ B[j:j+1, :]
+    /home/mathurin/workspace/CLaR/clar/solvers.py:387: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      S_inv_R -= S_inv_X[:, j:j+1] @ B[j:j+1, :]
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 1d, F), array(float64, 1d, A))
+      warnings.warn(NumbaPerformanceWarning(msg))
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      warnings.warn(NumbaPerformanceWarning(msg))
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, F))
+      warnings.warn(NumbaPerformanceWarning(msg))
+    /home/mathurin/miniconda3/lib/python3.7/site-packages/numba/typing/npydecl.py:977: NumbaPerformanceWarning: '@' is faster on contiguous arrays, called on (array(float64, 2d, A), array(float64, 2d, A))
+      warnings.warn(NumbaPerformanceWarning(msg))
     p_obj: 7.401050e-01
     d_obj: 6.786024e-01
     iteration: 0, gap: 6.1503e-02
     p_obj: 7.219445e-01
     d_obj: 7.219445e-01
     iteration: 50, gap: 2.2396e-08
-    /home/qbe/anaconda3/envs/mne/lib/python3.6/site-packages/matplotlib/figure.py:445: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      % get_backend())
+    /home/mathurin/workspace/CLaR/examples/plot_covariance_estimate.py:72: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      plt.show(block=False)
     TP: 3
     FP: 3
 
@@ -130,7 +160,7 @@ The example runs CLaR on simulated data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.266 seconds)
+   **Total running time of the script:** ( 0 minutes  8.352 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_covariance_estimate.py:
