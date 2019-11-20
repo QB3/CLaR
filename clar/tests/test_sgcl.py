@@ -33,8 +33,8 @@ def tests_sgcl(
     all_epochs = np.zeros((1, *Y.shape))
     all_epochs[0] = Y
 
-    B_sgcl, S_inv_sgcl, E, (gaps, gaps_accel) = solver(
-        X, Y, alpha, alpha_max, sigma_min, B0=None, n_iter=n_iter,
+    _, _, E, (gaps, gaps_accel) = solver(
+        X, Y, alpha, sigma_min, B0=None, n_iter=n_iter,
         gap_freq=gap_freq, active_set_freq=active_set_freq,
         S_freq=S_freq, pb_name="SGCL", use_accel=True, tol=tol,
         verbose=True)

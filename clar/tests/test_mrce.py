@@ -10,11 +10,11 @@ def test_update_sigma_glasso():
     SNR = 1
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
 
-    X, all_epochs, B_star, (_, S_star) = get_data_me(
+    all_epochs = get_data_me(
         dictionary_type="Gaussian", noise_type="Gaussian_multivariate",
         n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
         n_sources=n_sources, n_active=3, rho_noise=rho_noise,
-        SNR=SNR)
+        SNR=SNR)[1]
 
     emp_cov = np.zeros((n_channels, n_channels))
     for i in range(n_epochs):
@@ -23,7 +23,7 @@ def test_update_sigma_glasso():
 
     alpha_prec = 0.001
 
-    covariance, precision = update_sigma_glasso(
+    update_sigma_glasso(
         emp_cov, alpha_prec, cov_init=None, mode='cd', tol=1e-4,
         enet_tol=1e-4, max_iter=100, verbose=False,
         return_costs=False, eps=np.finfo(np.float64).eps,
@@ -36,12 +36,11 @@ def test_mrce():
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
     pb_name = "mrce"
     tol = 1e-4
-
-    X, all_epochs, B_star, (_, S_star) = get_data_me(
+    X, all_epochs = get_data_me(
         dictionary_type="Gaussian", noise_type="Gaussian_multivariate",
         n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
         n_sources=n_sources, n_active=3, rho_noise=rho_noise,
-        SNR=SNR)
+        SNR=SNR)[:2]
 
     alpha_Sigma_inv = 0.01
 
@@ -53,8 +52,8 @@ def test_mrce():
 
     alpha = alpha_max * 0.9
 
-    B_mrce, (Sigma, Sigma_inv), E, gaps = solver(
-        X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
+    solver(
+        X, all_epochs, alpha, sigma_min, B0=None,
         tol=tol, pb_name=pb_name, n_iter=1000, alpha_Sigma_inv=alpha_Sigma_inv)
 
 
