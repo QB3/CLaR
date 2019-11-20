@@ -17,8 +17,8 @@ def get_path(
         X, measurement, list_pourcentage_alpha, alpha_max,
         sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
-        update_S_freq=10, pb_name="CLAR", use_accel=False,
-        verbose=True, use_heuristic_stopping_criterion=False):
+        S_freq=10, pb_name="CLAR", use_accel=False,
+        verbose=True, heur_stop=False):
     dict_masks = {}
     dict_dense_Bs = {}
     B_hat = None
@@ -32,9 +32,9 @@ def get_path(
         B_hat, _, _, _ = solver(
             X, measurement, alpha, sigma_min, B0=B_hat,
             n_iter=n_iter, gap_freq=gap_freq, active_set_freq=active_set_freq,
-            update_S_freq=update_S_freq, pb_name=pb_name, tol=tol,
+            S_freq=S_freq, pb_name=pb_name, tol=tol,
             use_accel=use_accel,
-            use_heuristic_stopping_criterion=use_heuristic_stopping_criterion)
+            heur_stop=heur_stop)
         # save the results
         mask = np.abs(B_hat).sum(axis=1) != 0
         str_pourcentage_alpha = '%0.10f' % pourcentage_alpha
@@ -66,16 +66,16 @@ def solver(
     all_epochs: np.array, shape (n_epochs, n_sensors, n_times)
         observations
     alpha: float
-        positiv number, coefficient multiplying the penalization
+        positive number, coefficient multiplying the penalization
     alpha_max: float
-        positiv number, if alpha is bigger than alpha max, B=0
+        positive number, if alpha is bigger than alpha max, B=0
     sigma_min: float
-        positiv number, value to which to eigenvalue smaller than sigma_min
+        positive number, value to which to eigenvalue smaller than sigma_min
         are put to when computing the inverse of ZZT
     B0: np.array, shape (n_sources, n_time)
         initial value of B
     n_iter: int
-        nuber of iterations of the algorithm
+        number of iterations of the algorithm
     tol : float
         The tolerance for the optimization: if the updates are
         smaller than ``tol``, the optimization code checks the
@@ -94,11 +94,11 @@ def solver(
     use_accel: bool
         States if you want to use accelratio while computing the dual.
     n_nncvx_iter: int
-        An approach to solve such non-convex problems is to solve a succesion
+        An approach to solve such non-convex problems is to solve a succession
         of convex problem. n_nncvx_iter is number of iteration in the outter
         loop.
     heur_stop: bool
-        States if you want to use an heuristic stoppping criterion ot stop
+        States if you want to use an heuristic stopping criterion ot stop
         the algo.
         Here the heuristic stopping criterion is
         primal[i] - primal[i+1] < primal[0] * tol / 10.
@@ -138,7 +138,7 @@ def solver(
         observations = all_epochs.transpose((1, 0, 2))
         observations = observations.reshape(observations.shape[0], -1)
         observations = observations.reshape((1, *observations.shape))
-        n_epochs, n_channels, n_times = all_epochs.shape
+        n_epochs, _, n_times = all_epochs.shape
     else:
         raise ValueError("Unknown solver %s" % pb_name)
 
