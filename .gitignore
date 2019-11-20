@@ -3,4 +3,9 @@ clar/__pycache__/*
 
 *.pyc
 
+doc/_build/*
+doc/auto_examples/*
+doc/gen_modules/*
+doc/generated/*
+
 .vscode/

@@ -1,3 +1,11 @@
+"""
+=======================================================
+Plot an estimate of the covariance matrix with CLaR
+=======================================================
+
+The example runs CLaR on simulated data.
+"""
+
 import numpy as np
 import matplotlib
 
