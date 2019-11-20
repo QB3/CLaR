@@ -200,7 +200,7 @@ def solver_(
         Sigma_inv = linalg.pinvh(Sigma)
         primal_first = get_p_obj_mrce(
             X, Y, Y2, Sigma, Sigma_inv, alpha,
-            alpha_Sigma_inv, B_first, sigma_min)
+            alpha_Sigma_inv, B_first)
     E.append(primal_first)
     print("------------------------")
     print("First primal: %0.2e" % primal_first)
@@ -295,7 +295,7 @@ def solver_(
             elif pb_name == "mrce":
                 p_obj = get_p_obj_mrce(
                     X, Y, Y2, Sigma, Sigma_inv, alpha,
-                    alpha_Sigma_inv, B, sigma_min)
+                    alpha_Sigma_inv, B)
             gap = p_obj - d_obj
             E.append(p_obj)
             gaps.append(gap)

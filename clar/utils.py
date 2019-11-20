@@ -206,7 +206,7 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         _, S_max_inv = clp_sqrt(Y @ Y.T / n_times, sigma_min)
         alpha_max = l_2_inf(X.T @ S_max_inv @ Y)
         alpha_max /= (n_channels * n_times)
-    elif pb_name == "CLAR" or pb_name == "NNCVX":
+    elif pb_name in ("CLAR", "NNCVX"):
         n_epochs = observation.shape[0]
         cov_Yl = 0
         for l in range(n_epochs):
@@ -274,12 +274,6 @@ def get_alpha_max_me(X, all_epochs, sigma_min):
 def get_sigma_min(Y):
     sigma_min = norm(Y, ord='fro') / (np.sqrt(Y.shape[1] * Y.shape[0]) * 1000)
     return sigma_min
-
-
-def get_relative_error(
-        Sigma_hat, Sigma_star, ord='fro'):
-    res = norm(Sigma_hat - Sigma_star, ord=ord) / norm(Sigma_star, ord=ord)
-    return res
 
 
 def get_relative_log_res(

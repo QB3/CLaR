@@ -188,7 +188,7 @@ def get_toeplitz_dictionary(
 
 
 def decimate(M, n_channels, axis, seed):
-    if n_channels == M.shape[0] or n_channels == -1:
+    if n_channels in (M.shape[0], -1):
         return M
 
     n_channels_max = M.shape[0]

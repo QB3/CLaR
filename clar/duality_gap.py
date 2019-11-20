@@ -1,8 +1,6 @@
 import numpy as np
-
+from numpy.linalg import norm, slogdet
 from numba import njit
-from numpy.linalg import norm
-from numpy.linalg import slogdet
 
 from clar.utils import l_2_inf
 from clar.utils import l_2_1
@@ -10,7 +8,7 @@ from clar.utils import l_2_1
 
 def get_p_obj_mrce(
         X, Y, Y2, Sigma, Sigma_inv, alpha,
-        alpha_Sigma_inv, B, sigma_min):
+        alpha_Sigma_inv, B):
     n, q = Y.shape
     XB = X @ B
     XBYT = XB @ Y.T
@@ -122,7 +120,6 @@ def get_feasible_theta_me(X, alpha, S_inv_R):
 
 @njit
 def get_duality_gap_mtl(X, Y, B, alpha):
-    n_sensors, n_times = Y.shape
     R = Y - X @ B
     p_obj = get_p_obj_mtl(R, B, alpha)
     Theta = get_feasible_theta_mtl(R, X, alpha)
