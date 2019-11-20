@@ -1,7 +1,7 @@
 import numpy as np
+from numpy.linalg import norm
 
 from numba import njit
-from numpy.linalg import norm
 
 from sklearn.covariance import graphical_lasso
 
@@ -160,7 +160,9 @@ def get_alpha_max_mtl(X, Y):
 
 
 def get_emp_cov(R):
-    assert(R.ndim == 3)
+    if  R.ndim != 3:
+        raise ValueError(
+            "Residuals have wrong size")
     n_epochs, n_channels, n_times = R.shape
     emp_cov = np.zeros((n_channels, n_channels))
     for l in range(n_epochs):

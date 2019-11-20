@@ -8,9 +8,7 @@ from sklearn.utils import check_random_state
 def get_data_me(
         dictionary_type="Gaussian", noise_type="Gaussian_iid", n_channels=20,
         n_sources=20, n_times=30, n_epochs=50, n_active=3, rho=0.3,
-        rho_noise=0.6,
-        SNR=1, seed=0,
-        meg=None, eeg=None):
+        rho_noise=0.6, SNR=1, seed=0):
     """Simulate artificial data.
 
     Parameters:
@@ -42,8 +40,8 @@ def get_data_me(
         If "grad", keeps only gradiometers in cov.
         If "mag", keeps only the magnetometers in cov.
     eeg: bool
-        If True keep electro-ancephalogramme in cov.
-        If False remove electro-ancephalogramme in cov.
+        If True keep electro-encephalogram in cov.
+        If False remove electro-encephalogram in cov.
 
     Returns
     -------
@@ -55,16 +53,16 @@ def get_data_me(
         real regression coefficients
     multiplicativ_factor
     S_star: np.array, shape (n_sensors, n_sensors)
-        covariane matrix
+        covariance matrix
     """
     rng = check_random_state(seed)
 
     X = get_dictionary(
         dictionary_type, n_channels=n_channels,
-        n_sources=n_sources, rho=rho, meg=meg, eeg=eeg, seed=seed)
+        n_sources=n_sources, rho=rho, seed=seed)
     S_star = get_S_star(
         noise_type=noise_type, n_channels=n_channels,
-        rho_noise=rho_noise, meg=meg, eeg=eeg, seed=seed)
+        rho_noise=rho_noise)
 
     rng = check_random_state(seed)
     # creates the signal XB
@@ -74,14 +72,13 @@ def get_data_me(
 
     X, all_epochs, B_star, (multiplicativ_factor, S_star) =\
         get_data_from_X_S_and_B_star(
-        X, B_star, S_star, n_epochs=n_epochs,
-        n_active=n_active, SNR=SNR, seed=seed)
+            X, B_star, S_star, n_epochs=n_epochs,
+            SNR=SNR, seed=seed)
     return X, all_epochs, B_star, (multiplicativ_factor, S_star)
 
 
 def get_S_star(
-        noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7, seed=0,
-        meg=True, eeg=True):
+        noise_type="Gaussian_iid", n_channels=20, rho_noise=0.7):
     """Simulate co-standard devation matrix.
 
     Parameters:
@@ -119,10 +116,10 @@ def get_S_star(
 
 def get_data_from_X_S_and_B_star(
         X, B_star, S_star, n_epochs=50,
-        n_active=3, SNR=0.5, seed=0):
+        SNR=0.5, seed=0):
     rng = check_random_state(seed)
     XB = X @ B_star
-    n_channels, n_sources = X.shape
+    n_channels = X.shape[0]
     _, n_times = B_star.shape
     # creates the noise
     noise_all_epochs = np.empty((n_epochs, n_channels, n_times))
@@ -141,7 +138,7 @@ def get_data_from_X_S_and_B_star(
 
 def get_dictionary(
         dictionary_type, n_channels=20, n_sources=30,
-        rho=0.3, meg=None, eeg=None, seed=0):
+        rho=0.3, seed=0):
     rng = check_random_state(seed)
     if dictionary_type == 'Toeplitz':
         X = get_toeplitz_dictionary(

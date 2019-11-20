@@ -12,7 +12,7 @@ def test_sgcl1():
 
 
 def tests_sgcl(
-        dictionary_type="Gaussian", noise_type="Gaussian_iid", rho_noise=0.3,
+        noise_type="Gaussian_iid", rho_noise=0.3,
         SNR=0.5, n_channels=20, n_times=30, n_sources=10, n_active=3,
         gap_freq=100, active_set_freq=1, S_freq=10, n_iter=10**6,
         p_alpha_max=0.9, tol=10**-4):

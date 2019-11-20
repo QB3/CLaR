@@ -24,10 +24,7 @@ def test_update_sigma_glasso():
     alpha_prec = 0.001
 
     update_sigma_glasso(
-        emp_cov, alpha_prec, cov_init=None, mode='cd', tol=1e-4,
-        enet_tol=1e-4, max_iter=100, verbose=False,
-        return_costs=False, eps=np.finfo(np.float64).eps,
-        return_n_iter=False)
+        emp_cov, alpha_prec, enet_tol=1e-4, max_iter=100)
 
 
 def test_mrce():

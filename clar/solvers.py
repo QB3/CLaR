@@ -15,13 +15,12 @@ from .duality_gap import (
 
 def get_path(
         X, measurement, list_pourcentage_alpha, alpha_max,
-        sigma_min, B0=None,
-        n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
-        S_freq=10, pb_name="CLAR", use_accel=False,
+        sigma_min, B0=None, n_iter=10**4, tol=10**-4, gap_freq=10,
+        active_set_freq=5, S_freq=10, pb_name="CLAR", use_accel=False,
         verbose=True, heur_stop=False):
     dict_masks = {}
     dict_dense_Bs = {}
-    B_hat = None
+    B_hat = B0
 
     for n_alpha, pourcentage_alpha in enumerate(list_pourcentage_alpha):
         print("--------------------------------------------------------")
@@ -34,7 +33,7 @@ def get_path(
             n_iter=n_iter, gap_freq=gap_freq, active_set_freq=active_set_freq,
             S_freq=S_freq, pb_name=pb_name, tol=tol,
             use_accel=use_accel,
-            heur_stop=heur_stop)
+            heur_stop=heur_stop, verbose=verbose)
         # save the results
         mask = np.abs(B_hat).sum(axis=1) != 0
         str_pourcentage_alpha = '%0.10f' % pourcentage_alpha
@@ -56,7 +55,7 @@ def solver(
         X, all_epochs, alpha, sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
         S_freq=10, pb_name="CLAR", use_accel=False,
-        n_nncvx_iter=10, verbose=True, heur_stop=False,
+        verbose=True, heur_stop=False,
         alpha_Sigma_inv=0.0001):
     """
     Parameters
@@ -93,10 +92,6 @@ def solver(
         "MTL", "MTLME", "SGCL", "CLAR" and "mrce"
     use_accel: bool
         States if you want to use accelratio while computing the dual.
-    n_nncvx_iter: int
-        An approach to solve such non-convex problems is to solve a succession
-        of convex problem. n_nncvx_iter is number of iteration in the outter
-        loop.
     heur_stop: bool
         States if you want to use an heuristic stopping criterion ot stop
         the algo.
@@ -162,7 +157,7 @@ def solver_(
     d_obj_acc = - np.infty
     n_epochs, n_sensors, n_times = all_epochs.shape
 
-    if pb_name == "CLAR" or pb_name == "mrce":
+    if pb_name in ("CLAR", "mrce"):
         # compute Y2, costly quantity to compute once
         Y2 = np.zeros((n_sensors, n_sensors))
         Y = np.zeros((n_sensors, n_times))
@@ -171,7 +166,7 @@ def solver_(
             Y += all_epochs[l, :, :]
         Y2 /= n_epochs
         Y /= n_epochs
-    elif pb_name == "MTL" or "SGCL":
+    elif pb_name in ("MTL", "SGCL", "MTLME"):
         Y = all_epochs[0]
         Y2 = None
     elif pb_name == "MTLME":
@@ -187,7 +182,7 @@ def solver_(
     B_first = np.zeros(B.shape)
     if pb_name != "mrce":
         S_trace_first, S_inv_first = update_S(
-            Y, X, B_first, Y, Y2, sigma_min, pb_name)
+            Y, X, B_first, Y2, sigma_min, pb_name)
     if pb_name == "CLAR":
         primal_first, _ = get_duality_gap_me(
             X, all_epochs, B_first, S_trace_first, S_inv_first,
@@ -197,7 +192,7 @@ def solver_(
         primal_first, _ = get_duality_gap(
             Y, X, Y, B_first, S_trace_first,
             S_inv_R, sigma_min, alpha)
-    elif pb_name == "MTL" or pb_name == "MTLME":
+    elif pb_name in("MTL", "MTLME"):
         primal_first, _ = get_duality_gap_mtl(
             X, Y, B_first, alpha)
     elif pb_name == "mrce":
@@ -236,7 +231,7 @@ def solver_(
                 S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
                 S_inv_R = np.asfortranarray(S_inv @ R)
                 S_inv_X = S_inv @ X
-            elif pb_name == "MTL" or pb_name == "MTLME":
+            elif pb_name in ("MTL", "MTLME"):
                 # this else case is for MTL
                 # dummy variables for njit to work:
                 S_trace = n_sensors
@@ -294,7 +289,7 @@ def solver_(
                     if verbose:
                         print("gap_acc: %.2e" % (p_obj - d_obj_acc))
                     gaps_acc.append(p_obj - d_obj_acc)
-            elif pb_name == "MTL" or pb_name == "MTLME":
+            elif pb_name in ("MTL", "MTLME"):
                 p_obj, d_obj = get_duality_gap_mtl(
                     X, Y, B, alpha)
             elif pb_name == "mrce":
@@ -326,7 +321,7 @@ def solver_(
     return results
 
 
-def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
+def update_S(Y, X, B, Y2, sigma_min, pb_name):
     n_times = B.shape[1]
     n_sensors = Y.shape[-1]
     if pb_name == "CLAR":
@@ -338,7 +333,7 @@ def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
         Z = Y - X @ B
         ZZT = Z @ Z.T / n_times
         S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
-    elif pb_name == "MTL" or pb_name == "MTLME":
+    elif pb_name in ("MTL", "MTLME"):
         # this else case is for MTL
         # dummy variables for njit to work:
         S_trace = n_sensors
@@ -348,13 +343,13 @@ def update_S(Y, X, B, R, Y2, sigma_min, pb_name):
 
 @njit
 def update_B(
-        X, Y, B, R,  S_inv_R, S_inv_X,
+        X, Y, B, R, S_inv_R, S_inv_X,
         alpha, pb_name,
         active_set_passes=5):
     n_sensors, n_times = Y.shape
     n_sources = X.shape[1]
 
-    is_not_MTL = (pb_name != "MTL") and (pb_name != "MTLME")
+    is_not_MTL = pb_name not in ("MTL", "MTLME")
 
     active_set = np.ones(n_sources)
 
@@ -388,10 +383,8 @@ def update_B(
 
 
 def update_sigma_glasso(
-        emp_cov, alpha_Sigma_inv, cov_init=None, mode='cd', tol=1e-4,
-        enet_tol=1e-4, sigmamin=1e-4, max_iter=1e4, verbose=False,
-        return_costs=False, eps=np.finfo(np.float64).eps,
-        return_n_iter=False):
+        emp_cov, alpha_Sigma_inv, cov_init=None,
+        enet_tol=1e-4, max_iter=1e4, eps=np.finfo(np.float64).eps):
     _, n_features = emp_cov.shape
     if cov_init is None:
         covariance_ = emp_cov.copy()
