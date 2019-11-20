@@ -30,7 +30,7 @@ def get_path(
         alpha = pourcentage_alpha * alpha_max
         # run solver of pb_name
         B_hat, _, _, _ = solver(
-            X, measurement, alpha, alpha_max, sigma_min, B0=B_hat,
+            X, measurement, alpha, sigma_min, B0=B_hat,
             n_iter=n_iter, gap_freq=gap_freq, active_set_freq=active_set_freq,
             update_S_freq=update_S_freq, pb_name=pb_name, tol=tol,
             use_accel=use_accel,
@@ -53,7 +53,7 @@ def get_path(
 
 
 def solver(
-        X, all_epochs, alpha, alpha_max, sigma_min, B0=None,
+        X, all_epochs, alpha, sigma_min, B0=None,
         n_iter=10**4, tol=10**-4, gap_freq=10, active_set_freq=5,
         S_freq=10, pb_name="CLAR", use_accel=False,
         n_nncvx_iter=10, verbose=True, heur_stop=False,
@@ -143,7 +143,7 @@ def solver(
         raise ValueError("Unknown solver %s" % pb_name)
 
     results = solver_(
-        observations, X, alpha, alpha_max, sigma_min, B, n_iter, gap_freq,
+        observations, X, alpha, sigma_min, B, n_iter, gap_freq,
         use_accel, active_set_freq, S_freq, tol=tol,
         pb_name=pb_name, verbose=verbose,
         heur_stop=heur_stop, alpha_Sigma_inv=alpha_Sigma_inv)
@@ -151,7 +151,7 @@ def solver(
 
 
 def solver_(
-        all_epochs, X, alpha, alpha_max,  sigma_min, B, n_iter, gap_freq,
+        all_epochs, X, alpha, sigma_min, B, n_iter, gap_freq,
         use_accel, active_set_freq=5, S_freq=10, tol=10**-4,
         pb_name="CLAR", verbose=True, heur_stop=False, alpha_Sigma_inv=0.01):
     gaps = []
