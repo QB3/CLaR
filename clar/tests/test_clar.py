@@ -31,11 +31,11 @@ def test_clar(
     print("alpha = %.2e" % alpha)
     print("alpha = %.2e" % alpha)
     print("sigma_min = %.2e" % sigma_min)
-    _, _, _, gaps_me = solver(
+    gaps_me = solver(
         X, all_epochs, alpha, sigma_min, B0=None,
         n_iter=n_iter,
         gap_freq=gap_freq, active_set_freq=active_set_freq,
-        S_freq=S_freq, tol=tol, pb_name="CLAR")
+        S_freq=S_freq, tol=tol, pb_name="CLAR")[-1]
     gap_me = gaps_me[-1]
     assert gap_me < tol
 

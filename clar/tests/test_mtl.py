@@ -60,10 +60,9 @@ def test_mtl_me():
     alpha_div = 1.1
     alpha = alpha_max / alpha_div
 
-    _, _, _, gaps = solver(
+    gap = solver(
         X, all_epochs, alpha, sigma_min, B0=None,
-        tol=tol, pb_name=pb_name, n_iter=10000)
-    gap = gaps[-1]
+        tol=tol, pb_name=pb_name, n_iter=10000)[-1]
     np.testing.assert_array_less(gap, tol)
 
 
