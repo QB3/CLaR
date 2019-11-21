@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from clar.solvers import solver
+from clar.solvers import solver, get_path
 from clar.utils import get_alpha_max, get_sigma_min
 from clar.data.artificial import get_data_me
 
@@ -115,6 +115,7 @@ def test_clar(n_sources):
     p_alpha = 0.2
     tol = 1e-7
     X, all_epochs, _, _ = get_data_me(
+        dictionary_type="Toeplitz",
         n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
         n_sources=n_sources, n_active=n_active, rho_noise=rho_noise,
         SNR=SNR
@@ -129,6 +130,19 @@ def test_clar(n_sources):
         n_iter=n_iter, tol=tol, pb_name="CLAR")[-1]
     gap_me = gaps_me[-1]
     np.testing.assert_array_less(gap_me, tol)
+
+    p_alphas = np.geomspace(1, 0.1, 10)
+    dict_masks = get_path(
+        X, all_epochs, p_alphas, alpha_max, sigma_min,
+        n_iter=10**4, tol=10**-4)[0]
+
+    old_size_supp = 0
+    for supp in dict_masks.values():
+        size_supp = supp.sum()
+        np.testing.assert_array_less(old_size_supp - size_supp, 1)
+        old_size_supp = size_supp
+
+    # import ipdb; ipdb.set_trace()
 
 
 def test_mrce():
@@ -159,8 +173,3 @@ def test_mrce():
         alpha_Sigma_inv=alpha_Sigma_inv)[-2]
 
     assert (Es[-1] - Es[-2]) <= 1e-10
-
-
-if __name__ == '__main__':
-    test_mtl()
-    test_mtl_me()

@@ -146,7 +146,7 @@ def get_dictionary(
     elif dictionary_type == 'Gaussian':
         X = rng.randn(n_channels, n_sources)
     else:
-        raise NotImplementedError("No dictionary '{}' in maxsparse"
+        raise NotImplementedError("No dictionary '{}' in clar"
                                   .format(dictionary_type))
     normalize(X)
     return X
