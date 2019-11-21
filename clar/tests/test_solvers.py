@@ -92,10 +92,8 @@ def tests_sgcl(n_sources):
         pb_name="SGCL", use_accel=True, tol=tol,
         verbose=True)
 
-    log_gap = np.log10(gaps[-1])
-    log_gap_accel = np.log10(gaps_accel[-1])
     np.testing.assert_array_less(
-        np.minimum(log_gap, log_gap_accel), np.log10(tol) * E[0])
+        np.minimum(gaps[-1], gaps_accel[-1]), tol * E[0])
 
 
 @pytest.mark.parametrize("n_sources", [10, 15, 20])
