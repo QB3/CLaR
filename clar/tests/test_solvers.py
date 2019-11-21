@@ -138,8 +138,3 @@ def test_mrce():
         alpha_Sigma_inv=alpha_Sigma_inv)[-2]
 
     np.testing.assert_array_less(Es[-1] - Es[-2], 1e-10)
-
-    Beta = solver(
-        X, all_epochs, alpha_max * 1.1, sigma_min, B0=None,
-        tol=1e-8, pb_name=pb_name, n_iter=10000,
-        alpha_Sigma_inv=alpha_Sigma_inv)[0]
