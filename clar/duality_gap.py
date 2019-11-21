@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.linalg import norm, slogdet
-from numba import njit
 
 from clar.utils import l_2_inf
 from clar.utils import l_2_1
@@ -89,7 +88,6 @@ def get_feasible_theta(X, alpha, S_inv_R):
     return S_inv_R / scaling_factor
 
 
-@njit
 def get_feasible_theta_me(X, alpha, S_inv_R):
     n_epochs, n_channels, n_times = S_inv_R.shape
     S_inv_R_mean = np.zeros((n_channels, n_times), dtype=np.float64)
