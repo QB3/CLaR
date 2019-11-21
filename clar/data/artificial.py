@@ -107,8 +107,7 @@ def get_S_star(
     if noise_type == "Gaussian_iid":
         S_star = np.eye(n_channels)
     elif noise_type == "Gaussian_multivariate":
-        vect = rho_noise ** np.arange(n_channels)
-        S_star = toeplitz(vect, vect)
+        S_star = toeplitz(rho_noise ** np.arange(n_channels))
     else:
         raise ValueError("Unknown noise type %s" % noise_type)
     return S_star
@@ -181,7 +180,6 @@ def get_toeplitz_dictionary(
         The dictionary.
     """
     rng = check_random_state(seed)
-    vect = rho ** np.arange(n_sources)
-    covar = toeplitz(vect, vect)
+    covar = toeplitz(rho ** np.arange(n_sources))
     X = rng.multivariate_normal(np.zeros(n_sources), covar, n_channels)
     return X

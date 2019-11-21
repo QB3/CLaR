@@ -38,32 +38,6 @@ def test_mtl():
     np.testing.assert_array_less(gaps[-1], tol * E[0])
 
 
-def test_mtl_me():
-    rho_noise = 0.3
-    SNR = 1
-    n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
-    pb_name = "MTLME"
-    tol = 1e-7
-
-    X, all_epochs, _, _ = get_data_me(
-        n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
-        n_sources=n_sources, n_active=3, rho_noise=rho_noise,
-        SNR=SNR)
-
-    Y = np.mean(all_epochs, axis=0)
-    sigma_min = get_sigma_min(Y)
-
-    alpha_max = get_alpha_max(X, all_epochs, sigma_min, pb_name=pb_name)
-
-    alpha_div = 1.1
-    alpha = alpha_max / alpha_div
-
-    gap = solver(
-        X, all_epochs, alpha, sigma_min, B0=None,
-        tol=tol, pb_name=pb_name, n_iter=10000)[-1]
-    np.testing.assert_array_less(gap, tol)
-
-
 @pytest.mark.parametrize("n_sources", [10, 15, 20])
 def tests_sgcl(n_sources):
     rho_noise = 0.3
@@ -82,7 +56,7 @@ def tests_sgcl(n_sources):
     Y = all_epochs.mean(axis=0)
     sigma_min = get_sigma_min(Y)
     alpha_max = get_alpha_max(X, Y, sigma_min, "SGCL")
-    alpha = alpha_max * 0.9
+    alpha = alpha_max * 0.1
 
     all_epochs = np.zeros((1, *Y.shape))
     all_epochs[0] = Y
@@ -156,11 +130,16 @@ def test_mrce():
         X, all_epochs, sigma_min, pb_name=pb_name,
         alpha_Sigma_inv=alpha_Sigma_inv)
 
-    alpha = alpha_max * 0.9
+    alpha = alpha_max * 0.1
 
     Es = solver(
         X, all_epochs, alpha, sigma_min, B0=None,
         tol=tol, pb_name=pb_name, n_iter=1000,
         alpha_Sigma_inv=alpha_Sigma_inv)[-2]
 
-    assert (Es[-1] - Es[-2]) <= 1e-10
+    np.testing.assert_array_less(Es[-1] - Es[-2], 1e-10)
+
+    Beta = solver(
+        X, all_epochs, alpha_max * 1.1, sigma_min, B0=None,
+        tol=1e-8, pb_name=pb_name, n_iter=10000,
+        alpha_Sigma_inv=alpha_Sigma_inv)[0]

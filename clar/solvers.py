@@ -37,16 +37,8 @@ def get_path(
         # save the results
         mask = np.abs(B_hat).sum(axis=1) != 0
         str_pourcentage_alpha = '%0.10f' % pourcentage_alpha
-        if pb_name == "MTLME":
-            n_sources = X.shape[1]
-            n_epochs, _, n_times = measurement.shape
-            B_reshaped = B_hat.reshape((n_sources, n_epochs, n_times))
-            B_reshaped = B_reshaped.mean(axis=1)
-            dict_masks[str_pourcentage_alpha] = mask
-            dict_dense_Bs[str_pourcentage_alpha] = B_reshaped[mask, :]
-        else:
-            dict_masks[str_pourcentage_alpha] = mask
-            dict_dense_Bs[str_pourcentage_alpha] = B_hat[mask, :]
+        dict_masks[str_pourcentage_alpha] = mask
+        dict_dense_Bs[str_pourcentage_alpha] = B_hat[mask, :]
     assert len(dict_dense_Bs.keys()) == len(list_pourcentage_alpha)
     return dict_masks, dict_dense_Bs
 
@@ -89,7 +81,7 @@ def solver(
         S is updated every S times.
     pb_name: str
         choose the problem you want to solve between
-        "MTL", "MTLME", "SGCL", "CLAR" and "mrce"
+        "MTL", "SGCL", "CLAR" and "mrce"
     use_accel: bool
         States if you want to use accelratio while computing the dual.
     heur_stop: bool
@@ -110,11 +102,7 @@ def solver(
         print("--------- %s -----------------" % pb_name)
 
     if B0 is None:
-        if pb_name != "MTLME":
-            B = np.zeros((n_sources, n_times), dtype=float)
-        else:
-            n_epochs, _, n_times = all_epochs.shape
-            B = np.zeros((n_sources, n_times * n_epochs), dtype=float)
+        B = np.zeros((n_sources, n_times), dtype=float)
     else:
         B = B0.copy().astype(np.float64)
 
@@ -125,15 +113,6 @@ def solver(
         observations = all_epochs[None, :, :]
     elif pb_name in ("CLAR", "mrce"):
         observations = all_epochs
-    elif pb_name == "MTLME":
-        if all_epochs.ndim != 3:
-            raise ValueError(
-                "Wrong number of dimensions, expected 2, "
-                "got %d " % all_epochs.ndim)
-        observations = all_epochs.transpose((1, 0, 2))
-        observations = observations.reshape(observations.shape[0], -1)
-        observations = observations.reshape((1, *observations.shape))
-        n_epochs, _, n_times = all_epochs.shape
     else:
         raise ValueError("Unknown solver %s" % pb_name)
 
@@ -166,11 +145,9 @@ def solver_(
             Y += all_epochs[l, :, :]
         Y2 /= n_epochs
         Y /= n_epochs
-    elif pb_name in ("MTL", "SGCL", "MTLME"):
+    elif pb_name in ("MTL", "SGCL"):
         Y = all_epochs[0]
         Y2 = None
-    elif pb_name == "MTLME":
-        Y = all_epochs
 
     if use_accel:
         K = 6
@@ -192,7 +169,7 @@ def solver_(
         primal_first, _ = get_duality_gap(
             Y, X, Y, B_first, S_trace_first,
             S_inv_R, sigma_min, alpha)
-    elif pb_name in("MTL", "MTLME"):
+    elif pb_name in "MTL":
         primal_first, _ = get_duality_gap_mtl(
             X, Y, B_first, alpha)
     elif pb_name == "mrce":
@@ -231,7 +208,7 @@ def solver_(
                 S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
                 S_inv_R = np.asfortranarray(S_inv @ R)
                 S_inv_X = S_inv @ X
-            elif pb_name in ("MTL", "MTLME"):
+            elif pb_name in "MTL":
                 # this else case is for MTL
                 # dummy variables for njit to work:
                 S_trace = n_sensors
@@ -289,7 +266,7 @@ def solver_(
                     if verbose:
                         print("gap_acc: %.2e" % (p_obj - d_obj_acc))
                     gaps_acc.append(p_obj - d_obj_acc)
-            elif pb_name in ("MTL", "MTLME"):
+            elif pb_name in "MTL":
                 p_obj, d_obj = get_duality_gap_mtl(
                     X, Y, B, alpha)
             elif pb_name == "mrce":
@@ -333,7 +310,7 @@ def update_S(Y, X, B, Y2, sigma_min, pb_name):
         Z = Y - X @ B
         ZZT = Z @ Z.T / n_times
         S_trace, S_inv = clp_sqrt(ZZT, sigma_min)
-    elif pb_name in ("MTL", "MTLME"):
+    elif pb_name in "MTL":
         # this else case is for MTL
         # dummy variables for njit to work:
         S_trace = n_sensors
@@ -349,7 +326,7 @@ def update_B(
     n_sensors, n_times = Y.shape
     n_sources = X.shape[1]
 
-    is_not_MTL = pb_name not in ("MTL", "MTLME")
+    is_not_MTL = pb_name not in "MTL"
 
     active_set = np.ones(n_sources)
 
