@@ -12,7 +12,7 @@ def test_clar1():
 
 
 def test_clar(
-        dictionary_type="Gaussian", noise_type="Gaussian_iid", rho_noise=0.3,
+        noise_type="Gaussian_iid", rho_noise=0.3,
         SNR=0.5, n_channels=20, n_times=30, n_sources=10, n_epochs=50,
         n_active=3, gap_freq=50, active_set_freq=1, S_freq=10,
         n_iter=10**4, alpha_under_alpha_max=0.2, tol=1e-7):

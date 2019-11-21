@@ -1,14 +1,14 @@
 import numpy as np
+from numpy.linalg import norm
 
 from numba import njit
-from numpy.linalg import norm
 
 from sklearn.covariance import graphical_lasso
 
 
 @njit
 def sqrtm(ZZT):
-    """Take the square root of a symetrique definite matrix.
+    """Take the square root of a symmetric definite matrix.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
@@ -21,8 +21,8 @@ def sqrtm(ZZT):
 
 
 def get_S_Sinv(ZZT, sigma_min=1e-6):
-    """Take the square root and inverse of squre root of a
-    symetrique definite matrix.
+    """Take the square root and inverse of square root of a
+    symmetric definite matrix.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
@@ -49,7 +49,7 @@ def BST(u, tau):
     Parameters
     ----------------------
     u: numpy array
-    tau: non*negativ number
+    tau: non*negative number
 
     Output
     ---------------------
@@ -70,7 +70,7 @@ def BST(u, tau):
 
 @njit
 def clp_sqrt(ZZT, sigma_min):
-    """Update Sigma by conditionning it better.
+    """Update Sigma by conditioning it better.
 
     Output: (float,  np.array, shape (n_sensors, n_sensors))
         (trace of Sigma updated, inverse of Sigma updated)
@@ -85,12 +85,12 @@ def clp_sqrt(ZZT, sigma_min):
 
 @njit
 def condition_better_glasso(ZZT, sigma_min):
-    """Update ZZT by conditionning it better.
+    """Update ZZT by conditioning it better.
 
     Parameters:
     ----------
     ZZT: np.array, shape (n_channels, n_channels)
-        real, positiv definite symmetric matrix
+        real, positive definite symmetric matrix
 
     Output:
     -------
@@ -160,7 +160,9 @@ def get_alpha_max_mtl(X, Y):
 
 
 def get_emp_cov(R):
-    assert(R.ndim == 3)
+    if R.ndim != 3:
+        raise ValueError(
+            "Residuals have wrong size")
     n_epochs, n_channels, n_times = R.shape
     emp_cov = np.zeros((n_channels, n_channels))
     for l in range(n_epochs):
@@ -204,7 +206,7 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         _, S_max_inv = clp_sqrt(Y @ Y.T / n_times, sigma_min)
         alpha_max = l_2_inf(X.T @ S_max_inv @ Y)
         alpha_max /= (n_channels * n_times)
-    elif pb_name == "CLAR" or pb_name == "NNCVX":
+    elif pb_name in ("CLAR", "NNCVX"):
         n_epochs = observation.shape[0]
         cov_Yl = 0
         for l in range(n_epochs):
@@ -218,21 +220,21 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         assert observation.ndim == 3
         assert alpha_Sigma_inv is not None
         emp_cov = get_emp_cov(observation)
-        Sigma, Sigma_inv = graphical_lasso(
-            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)[-1]
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
     elif pb_name == "glasso":
         assert observation.ndim == 2
         assert alpha_Sigma_inv is not None
         emp_cov = observation @ observation.T / n_times
-        Sigma, Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)
+        Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)[-1]
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
     elif pb_name == "mrce":
         assert observation.ndim == 2
         assert alpha_Sigma_inv is not None
         emp_cov = observation @ observation.T / n_times
-        Sigma, Sigma_inv = graphical_lasso(
-            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)
+        Sigma_inv = graphical_lasso(
+            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)[-1]
         alpha_max = np.abs(X.T @ Sigma_inv @ Y).max() / (n_channels * n_times)
     else:
         raise NotImplementedError(
@@ -269,21 +271,9 @@ def get_alpha_max_me(X, all_epochs, sigma_min):
     return result
 
 
-def get_sigma_min_and_alpha(X, Y):
-    sigma_min = norm(Y) / (np.sqrt(Y.shape[1] * Y.shape[0]) * 1000)
-    alpha = get_alpha_max(X, Y, sigma_min) / 10
-    return sigma_min, alpha
-
-
 def get_sigma_min(Y):
     sigma_min = norm(Y, ord='fro') / (np.sqrt(Y.shape[1] * Y.shape[0]) * 1000)
     return sigma_min
-
-
-def get_relative_error(
-        Sigma_hat, Sigma_star, ord='fro'):
-    res = norm(Sigma_hat - Sigma_star, ord=ord) / norm(Sigma_star, ord=ord)
-    return res
 
 
 def get_relative_log_res(
@@ -305,7 +295,7 @@ def get_norm_res(X, Y, B, Sigma_inv, ord='fro'):
 
 def get_norm_res_me(X, all_epochs, B, Sigma_inv, ord='fro'):
     R = all_epochs - X @ B
-    n_epochs, n_sensors, n_times = R.shape
+    n_epochs = R.shape[0]
     res = 0
     for l in range(n_epochs):
         res += norm(R[l, :, :].T @ Sigma_inv @ R[l, :, :], ord=ord)
