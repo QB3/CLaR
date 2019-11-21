@@ -1,8 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
-
 from numba import njit
-
 from sklearn.covariance import graphical_lasso
 
 
@@ -18,27 +16,6 @@ def sqrtm(ZZT):
     eigvals = np.sqrt(eigvals)
     eigvals = np.expand_dims(eigvals, axis=1)
     return eigvecs @ (eigvals * eigvecs.T)
-
-
-def get_S_Sinv(ZZT, sigma_min=1e-6):
-    """Take the square root and inverse of square root of a
-    symmetric definite matrix.
-
-    Output: (float,  np.array, shape (n_sensors, n_sensors))
-        (trace of Sigma updated, inverse of Sigma updated)
-     """
-    eigvals, eigvecs = np.linalg.eigh(ZZT)
-    eigvals = np.maximum(0, eigvals)
-    eigvals = np.sqrt(eigvals)
-    div_eigvals = 1 / eigvals
-    mask = (eigvals < sigma_min * eigvals.max())
-
-    print(eigvals)
-    print('Number of eigvals clipped: %d' % mask.sum())
-    div_eigvals[mask] = 0
-    eigvals = np.expand_dims(eigvals, axis=1)
-    div_eigvals = np.expand_dims(div_eigvals, axis=1)
-    return eigvecs @ (eigvals * eigvecs.T), eigvecs @ (div_eigvals * eigvecs.T)
 
 
 @njit
@@ -153,12 +130,6 @@ def l_2_1(A):
     # return norm(A, axis=1, ord=2).sum()
 
 
-def get_alpha_max_mtl(X, Y):
-    n_sensors, n_times = Y.shape
-    alpha_max = l_2_inf(X.T @ Y) / (n_times * n_sensors)
-    return alpha_max
-
-
 def get_emp_cov(R):
     if R.ndim != 3:
         raise ValueError(
@@ -223,80 +194,12 @@ def get_alpha_max(X, observation, sigma_min, pb_name, alpha_Sigma_inv=None):
         Sigma_inv = graphical_lasso(
             emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)[-1]
         alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
-    elif pb_name == "glasso":
-        assert observation.ndim == 2
-        assert alpha_Sigma_inv is not None
-        emp_cov = observation @ observation.T / n_times
-        Sigma_inv = graphical_lasso(emp_cov, alpha_Sigma_inv)[-1]
-        alpha_max = l_2_inf(X.T @ Sigma_inv @ Y) / (n_channels * n_times)
-    elif pb_name == "mrce":
-        assert observation.ndim == 2
-        assert alpha_Sigma_inv is not None
-        emp_cov = observation @ observation.T / n_times
-        Sigma_inv = graphical_lasso(
-            emp_cov, alpha_Sigma_inv, max_iter=10 ** 6)[-1]
-        alpha_max = np.abs(X.T @ Sigma_inv @ Y).max() / (n_channels * n_times)
     else:
         raise NotImplementedError(
             "No solver '{}' in sgcl".format(pb_name))
     return alpha_max
 
 
-def get_alpha_max_sgcl(X, Y, sigma_min):
-    """Function to compute the maximal alpha before obtaining all zeros.
-    """
-    n_sensors, n_times = Y.shape
-    _, Sigma_max_inv = clp_sqrt(
-        Y @ Y.T / n_times, sigma_min)
-    result = l_2_inf(X.T @ Sigma_max_inv @ Y)
-    result /= (n_sensors * n_times)
-    return result
-
-
-def get_alpha_max_me(X, all_epochs, sigma_min):
-    """Function to compute the maximal alpha before obtaining all zeros.
-    """
-    n_epochs, n_sensors, n_times = all_epochs.shape
-    Y = all_epochs.mean(axis=0)
-
-    cov_Yl = 0
-    for l in range(n_epochs):
-        cov_Yl += all_epochs[l, :, :] @ all_epochs[l, :, :].T
-    cov_Yl /= (n_epochs * n_times)
-
-    _, Sigma_max_inv = clp_sqrt(
-        cov_Yl, sigma_min)
-    result = l_2_inf(X.T @ Sigma_max_inv @ Y)
-    result /= (n_sensors * n_times)
-    return result
-
-
 def get_sigma_min(Y):
     sigma_min = norm(Y, ord='fro') / (np.sqrt(Y.shape[1] * Y.shape[0]) * 1000)
     return sigma_min
-
-
-def get_relative_log_res(
-        X, Y, B_star, Sigma_inv_star, B_hat, Sigma_inv_hat, me=False):
-    if me:
-        res = get_norm_res_me(X, Y, B_hat, Sigma_inv_hat) / \
-            get_norm_res_me(X, Y, B_star, Sigma_inv_star)
-    else:
-        res = get_norm_res(X, Y, B_hat, Sigma_inv_hat) / \
-            get_norm_res(X, Y, B_star, Sigma_inv_star)
-    return np.log10(res)
-
-
-def get_norm_res(X, Y, B, Sigma_inv, ord='fro'):
-    R = Y - X @ B
-    res = norm(R.T @ (Sigma_inv @ R), ord=ord)
-    return res
-
-
-def get_norm_res_me(X, all_epochs, B, Sigma_inv, ord='fro'):
-    R = all_epochs - X @ B
-    n_epochs = R.shape[0]
-    res = 0
-    for l in range(n_epochs):
-        res += norm(R[l, :, :].T @ Sigma_inv @ R[l, :, :], ord=ord)
-    return res
