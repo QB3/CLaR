@@ -142,8 +142,6 @@ def test_clar(n_sources):
         np.testing.assert_array_less(old_size_supp - size_supp, 1)
         old_size_supp = size_supp
 
-    # import ipdb; ipdb.set_trace()
-
 
 def test_mrce():
     rho_noise = 0.6
