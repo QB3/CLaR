@@ -160,7 +160,7 @@ def get_alpha_max_mtl(X, Y):
 
 
 def get_emp_cov(R):
-    if  R.ndim != 3:
+    if R.ndim != 3:
         raise ValueError(
             "Residuals have wrong size")
     n_epochs, n_channels, n_times = R.shape

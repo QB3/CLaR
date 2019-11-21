@@ -11,12 +11,10 @@ import matplotlib
 
 import matplotlib.pyplot as plt
 
-from numpy.linalg import norm
 
 from clar.solvers import solver
-from clar.utils import get_alpha_max_me, get_sigma_min, get_alpha_max
+from clar.utils import get_alpha_max_me, get_sigma_min
 from clar.data.artificial import get_data_me
-from clar.utils import get_sigma_min, get_alpha_max
 
 
 rho_noise = 0.3
@@ -58,7 +56,7 @@ assert gap_me < tol
 try:
     matplotlib.rcParams["text.usetex"] = True
 except:
-    pass
+    print("Could not use tex for matplotlib rendering")
 
 fig, axarr = plt.subplots(1, 2)
 S = np.linalg.inv(S_inv)

@@ -385,7 +385,7 @@ def update_B(
 def update_sigma_glasso(
         emp_cov, alpha_Sigma_inv, cov_init=None,
         enet_tol=1e-4, max_iter=1e4, eps=np.finfo(np.float64).eps):
-    _, n_features = emp_cov.shape
+    n_features = emp_cov.shape[1]
     if cov_init is None:
         covariance_ = emp_cov.copy()
         # covariance_ = clp_sqrt(covariance_, sigmamin ** 2)
