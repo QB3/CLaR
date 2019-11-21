@@ -24,7 +24,6 @@ def get_p_obj_mrce(
     return p_obj
 
 
-@njit
 def get_p_obj_mtl(R, B, alpha):
     n_sensors, n_times = R.shape
     p_obj = (R ** 2).sum() / (2 * n_times * n_sensors) \
@@ -32,7 +31,6 @@ def get_p_obj_mtl(R, B, alpha):
     return p_obj
 
 
-@njit
 def get_d_obj_mtl(Y, Theta, alpha):
     n_sensors, n_times = Y.shape
     d_obj = alpha * (Theta * Y).sum() - \
@@ -40,7 +38,6 @@ def get_d_obj_mtl(Y, Theta, alpha):
     return d_obj
 
 
-@njit
 def get_feasible_theta_mtl(R, X, alpha):
     n_sensors, n_times = R.shape
     scaling_factor = l_2_inf(X.T @ R)
@@ -48,7 +45,6 @@ def get_feasible_theta_mtl(R, X, alpha):
     return R / scaling_factor
 
 
-@njit
 def get_p_obj_me(R_all_epochs, B, S_inv_R, S_trace, alpha):
     n_epochs, n_channels, n_times = R_all_epochs.shape
     p_obj = (R_all_epochs * S_inv_R).sum()
@@ -58,7 +54,6 @@ def get_p_obj_me(R_all_epochs, B, S_inv_R, S_trace, alpha):
     return p_obj
 
 
-@njit
 def get_d_obj_me(all_epochs, Theta, sigma_min, alpha):
     n_epochs, n_channels, n_times = all_epochs.shape
     d_obj = alpha * (all_epochs * Theta).sum() / n_epochs
@@ -69,7 +64,6 @@ def get_d_obj_me(all_epochs, Theta, sigma_min, alpha):
     return d_obj
 
 
-@njit
 def get_d_obj(Y, Theta, sigma_min, alpha):
     n_channels, n_times = Y.shape
     d_obj = alpha * (Y * Theta).sum()
@@ -78,7 +72,6 @@ def get_d_obj(Y, Theta, sigma_min, alpha):
     return d_obj
 
 
-@njit
 def get_p_obj(R, B, S_trace, alpha, S_inv_R):
     n_channels, n_times = R.shape
     p_obj = (R * S_inv_R).sum() / (2. * n_channels * n_times)
@@ -87,7 +80,6 @@ def get_p_obj(R, B, S_trace, alpha, S_inv_R):
     return p_obj
 
 
-@njit
 def get_feasible_theta(X, alpha, S_inv_R):
     n_channels, n_times = S_inv_R.shape
     scaling_factor = max(
@@ -118,7 +110,6 @@ def get_feasible_theta_me(X, alpha, S_inv_R):
     return S_inv_R / scaling_factor
 
 
-@njit
 def get_duality_gap_mtl(X, Y, B, alpha):
     R = Y - X @ B
     p_obj = get_p_obj_mtl(R, B, alpha)
@@ -127,7 +118,6 @@ def get_duality_gap_mtl(X, Y, B, alpha):
     return p_obj, d_obj
 
 
-@njit
 def get_duality_gap(
         R, X, Y, B, S_trace, S_inv_R, sigma_min, alpha):
     p_obj = get_p_obj(R, B, S_trace, alpha, S_inv_R)
@@ -136,7 +126,6 @@ def get_duality_gap(
     return p_obj, d_obj
 
 
-@njit
 def get_duality_gap_me(
         X, all_epochs, B, S_trace, S_inv,
         sigma_min, alpha):

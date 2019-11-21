@@ -185,19 +185,3 @@ def get_toeplitz_dictionary(
     covar = toeplitz(vect, vect)
     X = rng.multivariate_normal(np.zeros(n_sources), covar, n_channels)
     return X
-
-
-def decimate(M, n_channels, axis, seed):
-    if n_channels in (M.shape[0], -1):
-        return M
-
-    n_channels_max = M.shape[0]
-    rng = check_random_state(seed)
-
-    to_choose = rng.choice(np.arange(n_channels_max), n_channels)
-    to_choose.sort()
-    if axis.__contains__(1):
-        M = M[:, to_choose]
-    if axis.__contains__(0):
-        M = M[to_choose, :]
-    return M

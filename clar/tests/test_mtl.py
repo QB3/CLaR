@@ -10,7 +10,7 @@ def test_mtl():
     SNR = 1
     n_epochs, n_channels, n_sources, n_times = 5, 20, 10, 30
     pb_name = "MTL"
-    tol = 1e-7
+    tol = 1e-10
 
     X, all_epochs, _, _ = get_data_me(
         dictionary_type="Gaussian", noise_type="Gaussian_iid",
