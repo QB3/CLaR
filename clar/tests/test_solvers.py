@@ -29,15 +29,13 @@ def test_mtl():
     B_mtl, _, E, gaps = solver(
         X, Y, alpha, sigma_min, B0=None,
         tol=tol, pb_name=pb_name, n_iter=10000)
-    gap = gaps[-1]
-    np.testing.assert_array_less(gap, tol)
+    np.testing.assert_array_less(gaps[-1], tol)
 
     _, _, E, gaps = solver(
         X, Y, alpha, sigma_min, B0=B_mtl,
         tol=tol, pb_name=pb_name, n_iter=10000)
     np.testing.assert_equal(len(E), 2)
-    gap = gaps[-1]
-    np.testing.assert_array_less(gap, tol * E[0])
+    np.testing.assert_array_less(gaps[-1], tol * E[0])
 
 
 def test_mtl_me():
@@ -48,7 +46,6 @@ def test_mtl_me():
     tol = 1e-7
 
     X, all_epochs, _, _ = get_data_me(
-        dictionary_type="Gaussian", noise_type="Gaussian_iid",
         n_epochs=n_epochs, n_channels=n_channels, n_times=n_times,
         n_sources=n_sources, n_active=3, rho_noise=rho_noise,
         SNR=SNR)
@@ -86,8 +83,6 @@ def tests_sgcl(n_sources):
     sigma_min = get_sigma_min(Y)
     alpha_max = get_alpha_max(X, Y, sigma_min, "SGCL")
     alpha = alpha_max * 0.9
-    print("alpha = %.2e" % alpha)
-    print("sigma_min = %.2e" % sigma_min)
 
     all_epochs = np.zeros((1, *Y.shape))
     all_epochs[0] = Y
